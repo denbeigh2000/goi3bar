@@ -1,4 +1,4 @@
-package main
+package goi3bar
 
 import (
 	"bytes"
@@ -34,68 +34,6 @@ type Output struct {
 	Urgent    bool   `json:"urgent"`
 }
 
-type Item struct {
-	generate func(*Output) error
-
-	Name    string
-	current *Output
-	refresh time.Duration
-	kill    chan struct{}
-}
-
-func (i Item) Start() {
-	go i.loop()
-}
-
-func (i Item) Kill() {
-	close(i.kill)
-}
-
-func (i *Item) Get() *Output {
-	//fmt.Printf("Get-ting %v\n", i.current)
-	return i.current
-}
-
-func (i *Item) loop() {
-	t := time.NewTicker(i.refresh)
-	defer t.Stop()
-
-	for {
-		//fmt.Printf("Looping\n")
-		select {
-		case <-t.C:
-			err := i.generate(i.current)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
-				continue
-			}
-
-			//fmt.Printf("New value: %v\n", i.current)
-
-		case <-i.kill:
-			return
-		}
-	}
-}
-
-func NewItem(name string, interval time.Duration, fn func(*Output) error) *Item {
-	item := Item{
-		generate: fn,
-
-		Name:    name,
-		current: &Output{Color: "#FFFFFF"},
-		refresh: interval,
-		kill:    make(chan struct{}),
-	}
-
-	err := fn(item.current)
-	if err != nil {
-		panic(err)
-	}
-
-	return &item
-}
-
 func output(ch <-chan []*Output) {
 	fmt.Fprintf(os.Stdout, intro)
 	fmt.Fprintf(os.Stdout, "[\n")
@@ -120,7 +58,6 @@ func output(ch <-chan []*Output) {
 				isFirst = false
 			}
 
-			//fmt.Println(item.FullText)
 			err := enc.Encode(item)
 			if err != nil {
 				panic(err)
@@ -226,35 +163,10 @@ func (i *I3bar) loop() {
 			case <-i.kill:
 				return
 			case i.json <- items:
-				//fmt.Println(items[0].FullText)
 				continue
 			}
 		case <-i.kill:
 			return
 		}
 	}
-}
-
-func formatTime() string {
-	time := time.Now()
-
-	return timeFormat.Format(formatString, time)
-}
-
-func timeOutput(o *Output) error {
-	o.FullText = formatTime()
-	return nil
-}
-
-func main() {
-	clock := NewItem("time", 1*time.Second, timeOutput)
-
-	bar := NewI3bar(1 * time.Second)
-
-	bar.Register("time", clock)
-
-	bar.Start()
-	defer bar.Kill()
-
-	<-time.After(20 * time.Second)
 }
