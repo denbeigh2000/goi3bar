@@ -1,27 +1,21 @@
 package main
 
 import (
-	"bitbucket.org/denbeigh2000/goi3status"
+	i3 "bitbucket.org/denbeigh2000/goi3bar"
+	"bitbucket.org/denbeigh2000/goi3bar/packages"
+
 	"time"
 )
 
-func formatTime() string {
-	time := time.Now()
-
-	return timeFormat.Format(formatString, time)
-}
-
-func timeOutput(o *Output) error {
-	o.FullText = formatTime()
-	return nil
-}
-
 func main() {
-	clock := NewItem("time", 1*time.Second, timeOutput)
 
-	bar := NewI3bar(1 * time.Second)
+	clock := clock.NewClock("%a %d-%b-%y %I:%M:%S")
 
-	bar.Register("time", clock)
+	item := i3.NewItem("time", 1*time.Second, clock)
+
+	bar := i3.NewI3bar(1 * time.Second)
+
+	bar.Register("time", item)
 
 	bar.Start()
 	defer bar.Kill()

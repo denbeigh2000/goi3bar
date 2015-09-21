@@ -6,11 +6,15 @@ import (
 	"time"
 )
 
+type Updater interface {
+	Update(*Output) error
+}
+
 type Item struct {
-	generate func(*Output) error
+	Updater
 
 	Name    string
-	current *Output
+	Current *Output
 	refresh time.Duration
 	kill    chan struct{}
 }
@@ -23,26 +27,18 @@ func (i Item) Kill() {
 	close(i.kill)
 }
 
-func (i *Item) Get() *Output {
-	//fmt.Printf("Get-ting %v\n", i.current)
-	return i.current
-}
-
 func (i *Item) loop() {
 	t := time.NewTicker(i.refresh)
 	defer t.Stop()
 
 	for {
-		//fmt.Printf("Looping\n")
 		select {
 		case <-t.C:
-			err := i.generate(i.current)
+			err := i.Update(i.Current)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
 				continue
 			}
-
-			//fmt.Printf("New value: %v\n", i.current)
 
 		case <-i.kill:
 			return
@@ -50,17 +46,17 @@ func (i *Item) loop() {
 	}
 }
 
-func NewItem(name string, interval time.Duration, fn func(*Output) error) *Item {
+func NewItem(name string, interval time.Duration, u Updater) *Item {
 	item := Item{
-		generate: fn,
+		Updater: u,
 
 		Name:    name,
-		current: &Output{Color: "#FFFFFF"},
+		Current: &Output{Color: "#FFFFFF"},
 		refresh: interval,
 		kill:    make(chan struct{}),
 	}
 
-	err := fn(item.current)
+	err := u.Update(item.Current)
 	if err != nil {
 		panic(err)
 	}

@@ -7,8 +7,6 @@ import (
 	"io"
 	"os"
 	"time"
-
-	timeFormat "github.com/jehiah/go-strftime"
 )
 
 const (
@@ -136,7 +134,7 @@ func (i *I3bar) collect() []*Output {
 			panic(fmt.Sprintf("Missing key %v", k))
 		}
 
-		items[idx] = item.Get()
+		items[idx] = item.Current
 	}
 	return items
 }
