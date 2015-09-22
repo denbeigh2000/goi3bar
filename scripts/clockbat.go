@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	batteries := make(map[string]*battery.Battery, 2)
+	batteries := make(map[string]i3.Generator, 2)
 	batteries["bat1"] = &battery.Battery{
 		Name:       "ext bat",
 		Identifier: "BAT1",
@@ -22,18 +22,19 @@ func main() {
 
 	batteryOrder := []string{"bat0", "bat1"}
 
-	bats := battery.NewMultiBattery(batteries, batteryOrder)
+	// bats := battery.NewMultiBattery(batteries, batteryOrder)
+	batGen := i3.NewOrderedMultiGenerator(batteries, batteryOrder)
 
 	batProd := &i3.BaseProducer{
-		Generator: &bats,
+		Generator: batGen,
 		Interval:  5 * time.Second,
 		Name:      "bat",
 	}
 
-	clock := clock.NewClock("%a %d-%b-%y %I:%M:%S")
+	clockGen := clock.NewClock("%a %d-%b-%y %I:%M:%S")
 
 	clockProd := &i3.BaseProducer{
-		Generator: clock,
+		Generator: clockGen,
 		Interval:  1 * time.Second,
 		Name:      "time",
 	}
@@ -42,8 +43,6 @@ func main() {
 
 	bar.Register("time", clockProd)
 	bar.Register("bat", batProd)
-	// bar.Register("BAT0", bats["BAT0"])
-	// bar.Register("BAT1", bats["BAT1"])
 
 	bar.Order([]string{"bat", "time"})
 
