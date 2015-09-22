@@ -12,3 +12,7 @@ scripts/scriptname`
 
 I've tried to include some useful interfaces to make making blocks easy, which
 I will document in godoc later.
+
+Real men put their money where their mouth is: it powers my own i3bar:
+
+![i3bar](https://i.imgur.com/k1zTMvK.png)
