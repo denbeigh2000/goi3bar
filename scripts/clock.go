@@ -11,11 +11,15 @@ func main() {
 
 	clock := clock.NewClock("%a %d-%b-%y %I:%M:%S")
 
-	item := i3.NewItem("time", 1*time.Second, clock)
+	item := &i3.BaseProducer{
+		Generator: clock,
+		Interval:  1 * time.Second,
+		Name:      "time",
+	}
 
 	bar := i3.NewI3bar(1 * time.Second)
 
-	bar.Register(item)
+	bar.Register("time", item)
 
 	bar.Start()
 	defer bar.Kill()

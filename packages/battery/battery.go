@@ -22,20 +22,21 @@ type batInfo struct {
 	CurrentCurrent int `toml:"POWER_SUPPLY_CURRENT_NOW"`
 }
 
-func NewMultiBattery(names map[string]string, update time.Duration) (map[string]*i3.Item, error) {
-	items := make(map[string]*i3.Item, len(names))
-
-	for id, name := range names {
-		bat := &Battery{
-			Name:       name,
-			Identifier: id,
-		}
-
-		items[id] = i3.NewItem(id, update, bat)
-	}
-
-	return items, nil
-}
+//func NewMultiBattery(names map[string]string, update time.Duration) (map[string]*i3.Item, error) {
+//	items := make(map[string]*i3.Item, len(names))
+//
+//	for id, name := range names {
+//		bat := &Battery{
+//			Name:       name,
+//			Identifier: id,
+//		}
+//
+//		items[id] = i3.NewItem(update, bat)
+//		items[id].Name = id
+//	}
+//
+//	return items, nil
+//}
 
 type Battery struct {
 	Name       string

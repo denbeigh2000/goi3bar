@@ -14,6 +14,14 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
+type Producer interface {
+	Produce(out chan<- Update, kill <-chan struct{})
+}
+
+type Registerer interface {
+	Register(key string, p Producer)
+}
+
 type Output struct {
 	Align     string `json:"align,omitEmpty"`
 	Color     string `json:"color,omitEmpty"`
@@ -67,28 +75,28 @@ func output(ch <-chan []Output) {
 
 type Update struct {
 	Key string
-	Out Output
+	Out []Output
 }
 
 type I3bar struct {
-	items    map[string]*Item
-	values   map[string]Output
-	order    []string
-	interval time.Duration
-	in       chan Update
-	json     chan []Output
-	kill     chan struct{}
+	producers map[string]Producer
+	values    map[string][]Output
+	order     []string
+	interval  time.Duration
+	in        chan Update
+	json      chan []Output
+	kill      chan struct{}
 }
 
 func NewI3bar(update time.Duration) *I3bar {
 	return &I3bar{
-		items:    make(map[string]*Item),
-		order:    make([]string, 0),
-		interval: update,
-		in:       make(chan Update),
-		json:     make(chan []Output),
-		kill:     make(chan struct{}),
-		values:   make(map[string]Output),
+		producers: make(map[string]Producer),
+		order:     make([]string, 0),
+		interval:  update,
+		in:        make(chan Update),
+		json:      make(chan []Output),
+		kill:      make(chan struct{}),
+		values:    make(map[string][]Output),
 	}
 }
 
@@ -100,34 +108,28 @@ func (i I3bar) Kill() {
 	close(i.kill)
 }
 
-func (i *I3bar) Register(item *Item) {
-	key := item.Name
-	_, ok := i.items[key]
+func (i *I3bar) Register(key string, p Producer) {
+	_, ok := i.producers[key]
 	if ok {
-		panic(fmt.Sprintf("Key %v exists", key))
+		panic(fmt.Sprintf("Producer %v exists", key))
 	}
 
-	i.items[key] = item
-	i.values[key] = Output{}
+	i.producers[key] = p
+	i.values[key] = nil
 	i.order = append(i.order, key)
 
-	fmt.Printf("Setting properties of item %v\n", key)
-	// Kill all registered items when we kill the i3bar
-	item.kill = i.kill
-	item.out = i.in
-
-	item.Start()
+	go p.Produce(i.in, i.kill)
 }
 
 func (i *I3bar) Order(keys []string) error {
-	if len(keys) != len(i.items) {
+	if len(keys) != len(i.producers) {
 		return fmt.Errorf("Number of keys must equal number of items, expected %v got %v",
-			len(i.items), len(keys))
+			len(i.producers), len(keys))
 	}
 
 	for _, k := range keys {
-		if _, ok := i.items[k]; !ok {
-			return fmt.Errorf("Key not present: %v", k)
+		if _, ok := i.producers[k]; !ok {
+			return fmt.Errorf("Producer not present: %v", k)
 		}
 	}
 
@@ -136,15 +138,17 @@ func (i *I3bar) Order(keys []string) error {
 }
 
 func (i *I3bar) collect() []Output {
-	items := make([]Output, len(i.items))
+	items := make([]Output, 0)
 
-	for idx, k := range i.order {
+	for _, k := range i.order {
 		v, ok := i.values[k]
 		if !ok {
 			panic(fmt.Sprintf("Missing key %v", k))
 		}
 
-		items[idx] = v
+		for _, out := range v {
+			items = append(items, out)
+		}
 	}
 
 	return items
