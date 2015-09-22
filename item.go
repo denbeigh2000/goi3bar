@@ -6,25 +6,25 @@ import (
 	"time"
 )
 
-type Updater interface {
-	Update(*Output) error
+type Generator interface {
+	Generate() (Output, error)
 }
 
 type Item struct {
-	Updater
+	Generator
 
 	Name    string
-	Current *Output
+	out     chan<- Output
 	refresh time.Duration
 	kill    chan struct{}
 }
 
 func (i Item) Start() {
-	go i.loop()
-}
+	if i.out == nil || i.kill == nil {
+		panic("Item must be registered before starting")
+	}
 
-func (i Item) Kill() {
-	close(i.kill)
+	go i.loop()
 }
 
 func (i *Item) loop() {
@@ -34,11 +34,21 @@ func (i *Item) loop() {
 	for {
 		select {
 		case <-t.C:
-			err := i.Update(i.Current)
+			output, err := i.Generate()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
 				continue
 			}
+
+			// Try to asynchronously send the output, if it's time for another output pack, abandon it
+			go func() {
+				select {
+				case <-time.After(i.refresh):
+					return
+				case i.out <- output:
+					return
+				}
+			}()
 
 		case <-i.kill:
 			return
@@ -46,19 +56,14 @@ func (i *Item) loop() {
 	}
 }
 
-func NewItem(name string, interval time.Duration, u Updater) *Item {
+func NewItem(name string, interval time.Duration, g Generator) *Item {
 	item := Item{
-		Updater: u,
+		Generator: g,
 
 		Name:    name,
-		Current: &Output{Color: "#FFFFFF"},
+		out:     nil,
 		refresh: interval,
-		kill:    make(chan struct{}),
-	}
-
-	err := u.Update(item.Current)
-	if err != nil {
-		panic(err)
+		kill:    nil,
 	}
 
 	return &item

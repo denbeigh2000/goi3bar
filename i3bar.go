@@ -67,9 +67,11 @@ func output(ch <-chan []*Output) {
 
 type I3bar struct {
 	items    map[string]*Item
+	values   map[string]Output
 	order    []string
 	interval time.Duration
-	json     chan []*Output
+	in       chan Output
+	json     chan []Output
 	kill     chan struct{}
 }
 
@@ -78,7 +80,7 @@ func NewI3bar(update time.Duration) *I3bar {
 		items:    make(map[string]*Item),
 		order:    make([]string, 0),
 		interval: update,
-		json:     make(chan []*Output),
+		json:     make(chan []Output),
 		kill:     make(chan struct{}),
 	}
 }
@@ -100,6 +102,10 @@ func (i *I3bar) Register(key string, item *Item) {
 	i.items[key] = item
 	i.order = append(i.order, key)
 
+	// Kill all registered items when we kill the i3bar
+	item.kill = i.kill
+	item.out = i.in
+
 	item.Start()
 }
 
@@ -119,17 +125,18 @@ func (i *I3bar) Order(keys []string) error {
 	return nil
 }
 
-func (i *I3bar) collect() []*Output {
-	items := make([]*Output, len(i.items))
+func (i *I3bar) collect() []Output {
+	items := make([]Output, len(i.items))
 
 	for idx, k := range i.order {
-		item, ok := i.items[k]
+		v, ok := i.values[k]
 		if !ok {
 			panic(fmt.Sprintf("Missing key %v", k))
 		}
 
-		items[idx] = item.Current
+		items[idx] = v
 	}
+
 	return items
 }
 

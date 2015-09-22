@@ -87,11 +87,13 @@ func (b *Battery) update() error {
 	return nil
 }
 
-func (b *Battery) Update(o *i3.Output) error {
+func (b *Battery) Generate() (i3.Output, error) {
 	err := b.update()
 	if err != nil {
 		return err
 	}
+
+	o := &i3.Output{}
 
 	if !b.Present {
 		o.FullText = fmt.Sprintf("Battery %v not present", b.Identifier)
@@ -111,5 +113,5 @@ func (b *Battery) Update(o *i3.Output) error {
 
 	o.FullText = text
 
-	return nil
+	return *o, nil
 }
