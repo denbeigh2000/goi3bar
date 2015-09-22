@@ -44,28 +44,42 @@ func (i *Item) sendItems(items []Output) <-chan struct{} {
 	return done
 }
 
+func (i *Item) sendOutput() error {
+	outputs, err := i.Generate()
+	if err != nil {
+		return err
+	}
+
+	// Try to asynchronously send the output, if it's time for another output pack, abandon it
+	go func() {
+		select {
+		case <-i.sendItems(outputs):
+			return
+		case <-time.After(i.refresh):
+			return
+		}
+	}()
+
+	return nil
+}
+
 func (i *Item) loop() {
 	t := time.NewTicker(i.refresh)
 	defer t.Stop()
 
+	err := i.sendOutput()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
+	}
+
 	for {
 		select {
 		case <-t.C:
-			outputs, err := i.Generate()
+			err := i.sendOutput()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
 				continue
 			}
-
-			// Try to asynchronously send the output, if it's time for another output pack, abandon it
-			go func() {
-				select {
-				case <-i.sendItems(outputs):
-					return
-				case <-time.After(i.refresh):
-					return
-				}
-			}()
 
 		case <-i.kill:
 			return

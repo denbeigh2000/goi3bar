@@ -93,8 +93,11 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 		return
 	}
 
-	o := &i3.Output{}
-	out = []i3.Output{*o}
+	o := i3.Output{}
+	out = make([]i3.Output, 1)
+	defer func() {
+		out[0] = o
+	}()
 
 	if !b.Present {
 		o.FullText = fmt.Sprintf("Battery %v not present", b.Identifier)
