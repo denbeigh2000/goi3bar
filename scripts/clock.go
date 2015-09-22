@@ -24,5 +24,5 @@ func main() {
 	bar.Start()
 	defer bar.Kill()
 
-	<-time.After(20 * time.Second)
+	select {}
 }

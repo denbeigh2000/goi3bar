@@ -65,7 +65,7 @@ func (b *Battery) update() error {
 	b.Status = c.ValueOf("POWER_SUPPLY_STATUS")
 
 	fullCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_FULL"), 32)
-	currentCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_FULL"), 32)
+	currentCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_NOW"), 32)
 	powerUse, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_POWER_NOW"), 32)
 
 	currentPerc, _ := strconv.Atoi(c.ValueOf("POWER_SUPPLY_CAPACITY"))
@@ -94,7 +94,7 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 		return
 	}
 
-	o := i3.Output{}
+	o := i3.Output{Separator: true}
 	out = make([]i3.Output, 1)
 	defer func() {
 		out[0] = o

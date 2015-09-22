@@ -33,8 +33,9 @@ func (c Clock) Generate() ([]i3.Output, error) {
 	st := timeFormat.Format(c.format, time.Now())
 
 	o := i3.Output{
-		FullText: st,
-		Color:    "#FFFFFF",
+		FullText:  st,
+		Color:     "#FFFFFF",
+		Separator: true,
 	}
 
 	return []i3.Output{o}, nil
