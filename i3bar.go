@@ -26,7 +26,7 @@ type Output struct {
 	Urgent    bool   `json:"urgent"`
 }
 
-func output(ch <-chan []*Output) {
+func output(ch <-chan []Output) {
 	fmt.Fprintf(os.Stdout, intro)
 	fmt.Fprintf(os.Stdout, "[\n")
 
@@ -65,12 +65,17 @@ func output(ch <-chan []*Output) {
 	}
 }
 
+type Update struct {
+	Key string
+	Out Output
+}
+
 type I3bar struct {
 	items    map[string]*Item
 	values   map[string]Output
 	order    []string
 	interval time.Duration
-	in       chan Output
+	in       chan Update
 	json     chan []Output
 	kill     chan struct{}
 }
@@ -80,12 +85,14 @@ func NewI3bar(update time.Duration) *I3bar {
 		items:    make(map[string]*Item),
 		order:    make([]string, 0),
 		interval: update,
+		in:       make(chan Update),
 		json:     make(chan []Output),
 		kill:     make(chan struct{}),
+		values:   make(map[string]Output),
 	}
 }
 
-func (i I3bar) Start() {
+func (i *I3bar) Start() {
 	go i.loop()
 }
 
@@ -93,15 +100,18 @@ func (i I3bar) Kill() {
 	close(i.kill)
 }
 
-func (i *I3bar) Register(key string, item *Item) {
+func (i *I3bar) Register(item *Item) {
+	key := item.Name
 	_, ok := i.items[key]
 	if ok {
 		panic(fmt.Sprintf("Key %v exists", key))
 	}
 
 	i.items[key] = item
+	i.values[key] = Output{}
 	i.order = append(i.order, key)
 
+	fmt.Printf("Setting properties of item %v\n", key)
 	// Kill all registered items when we kill the i3bar
 	item.kill = i.kill
 	item.out = i.in
@@ -145,16 +155,13 @@ func (i *I3bar) loop() {
 
 	t := time.NewTicker(i.interval)
 	defer t.Stop()
-	defer func() {
-		for _, item := range i.items {
-			item.Kill()
-		}
-	}()
 
 	go output(i.json)
 
 	for {
 		select {
+		case update := <-i.in:
+			i.values[update.Key] = update.Out
 		case <-t.C:
 			items := i.collect()
 

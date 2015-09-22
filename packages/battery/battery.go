@@ -87,18 +87,19 @@ func (b *Battery) update() error {
 	return nil
 }
 
-func (b *Battery) Generate() (i3.Output, error) {
-	err := b.update()
+func (b *Battery) Generate() (out []i3.Output, err error) {
+	err = b.update()
 	if err != nil {
-		return err
+		return
 	}
 
 	o := &i3.Output{}
+	out = []i3.Output{*o}
 
 	if !b.Present {
 		o.FullText = fmt.Sprintf("Battery %v not present", b.Identifier)
 		o.Color = "#FF0000"
-		return nil
+		return
 	}
 
 	text := fmt.Sprintf("%v %v %v%% %v", b.Name, b.Status, b.Level, b.Remaining)
@@ -113,5 +114,5 @@ func (b *Battery) Generate() (i3.Output, error) {
 
 	o.FullText = text
 
-	return *o, nil
+	return
 }

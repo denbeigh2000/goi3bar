@@ -23,9 +23,9 @@ func main() {
 
 	bar := i3.NewI3bar(1 * time.Second)
 
-	bar.Register("time", item)
-	bar.Register("bat0", bats["BAT0"])
-	bar.Register("bat1", bats["BAT1"])
+	bar.Register(item)
+	bar.Register(bats["BAT0"])
+	bar.Register(bats["BAT1"])
 
 	bar.Order([]string{"bat0", "bat1", "time"})
 

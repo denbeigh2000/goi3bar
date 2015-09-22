@@ -7,14 +7,14 @@ import (
 )
 
 type Generator interface {
-	Generate() (Output, error)
+	Generate() ([]Output, error)
 }
 
 type Item struct {
 	Generator
 
 	Name    string
-	out     chan<- Output
+	out     chan<- Update
 	refresh time.Duration
 	kill    chan struct{}
 }
@@ -27,6 +27,23 @@ func (i Item) Start() {
 	go i.loop()
 }
 
+func (i *Item) sendItems(items []Output) <-chan struct{} {
+	done := make(chan struct{})
+
+	go func() {
+		for _, item := range items {
+			i.out <- Update{
+				Key: i.Name,
+				Out: item,
+			}
+		}
+
+		close(done)
+	}()
+
+	return done
+}
+
 func (i *Item) loop() {
 	t := time.NewTicker(i.refresh)
 	defer t.Stop()
@@ -34,7 +51,7 @@ func (i *Item) loop() {
 	for {
 		select {
 		case <-t.C:
-			output, err := i.Generate()
+			outputs, err := i.Generate()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", i.Name, err)
 				continue
@@ -43,9 +60,9 @@ func (i *Item) loop() {
 			// Try to asynchronously send the output, if it's time for another output pack, abandon it
 			go func() {
 				select {
-				case <-time.After(i.refresh):
+				case <-i.sendItems(outputs):
 					return
-				case i.out <- output:
+				case <-time.After(i.refresh):
 					return
 				}
 			}()

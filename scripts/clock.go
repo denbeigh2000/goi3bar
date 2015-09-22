@@ -15,7 +15,7 @@ func main() {
 
 	bar := i3.NewI3bar(1 * time.Second)
 
-	bar.Register("time", item)
+	bar.Register(item)
 
 	bar.Start()
 	defer bar.Kill()

@@ -16,14 +16,13 @@ func NewClock(format string) Clock {
 }
 
 // Generate implements i3.Generator
-func (c Clock) Generate() (i3.Output, error) {
+func (c Clock) Generate() ([]i3.Output, error) {
 	st := timeFormat.Format(c.format, time.Now())
-	o.FullText = st
 
 	o := i3.Output{
 		FullText: st,
 		Color:    "#FFFFFF",
 	}
 
-	return o, nil
+	return []i3.Output{o}, nil
 }
