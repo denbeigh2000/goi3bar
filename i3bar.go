@@ -14,12 +14,6 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
-type Color struct {
-	r uint32
-	g uint32
-	b uint32
-}
-
 type Output struct {
 	Align     string `json:"align,omitEmpty"`
 	Color     string `json:"color,omitEmpty"`

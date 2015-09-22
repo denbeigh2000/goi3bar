@@ -2,7 +2,7 @@ package main
 
 import (
 	i3 "bitbucket.org/denbeigh2000/goi3bar"
-	"bitbucket.org/denbeigh2000/goi3bar/packages"
+	"bitbucket.org/denbeigh2000/goi3bar/packages/clock"
 
 	"time"
 )
