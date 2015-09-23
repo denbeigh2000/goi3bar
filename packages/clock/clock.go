@@ -8,11 +8,7 @@ import (
 )
 
 type Clock struct {
-	format string
-}
-
-func NewClock(format string) Clock {
-	return Clock{format}
+	Format string
 }
 
 type multiClock struct {
@@ -30,7 +26,7 @@ type multiClock struct {
 
 // Generate implements i3.Generator
 func (c Clock) Generate() ([]i3.Output, error) {
-	st := timeFormat.Format(c.format, time.Now())
+	st := timeFormat.Format(c.Format, time.Now())
 
 	o := i3.Output{
 		FullText:  st,

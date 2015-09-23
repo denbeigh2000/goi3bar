@@ -9,7 +9,9 @@ import (
 
 func main() {
 
-	clock := clock.NewClock("%a %d-%b-%y %I:%M:%S")
+	clock := clock.Clock{
+		Format: "%a %d-%b-%y %I:%M:%S",
+	}
 
 	item := &i3.BaseProducer{
 		Generator: clock,
