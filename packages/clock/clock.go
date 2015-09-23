@@ -8,11 +8,10 @@ import (
 )
 
 type Clock struct {
-	format string
-}
-
-func NewClock(format string) Clock {
-	return Clock{format}
+	// How the time should be formatted. See http://strftime.org/ for reference.
+	Format string
+	// The IANA Timezone database zone name to show the time for
+	Location string
 }
 
 type multiClock struct {
@@ -20,17 +19,19 @@ type multiClock struct {
 	multiProducer i3.MultiProducer
 }
 
-//func MultiClock(format string, times map[string]time.Timezone) Generator {
-//	clocks := make(map[string]Clock)
-//	for abbr, zone := range times {
-//	}
-//}
-
-//func (m *Multi
-
 // Generate implements i3.Generator
 func (c Clock) Generate() ([]i3.Output, error) {
-	st := timeFormat.Format(c.format, time.Now())
+	if c.Location == "" {
+		c.Location = "Local"
+	}
+
+	l, err := time.LoadLocation(c.Location)
+	if err != nil {
+		return nil, err
+	}
+
+	t := time.Now()
+	st := timeFormat.Format(c.Format, t.In(l))
 
 	o := i3.Output{
 		FullText:  st,
