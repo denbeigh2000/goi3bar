@@ -128,7 +128,13 @@ func (i *I3bar) Register(key string, p Producer) {
 	i.values[key] = nil
 	i.order = append(i.order, key)
 
-	go p.Produce(i.in, i.kill)
+	out := p.Produce(i.kill)
+	go func() {
+		for x := range out {
+			// TODO: Need to clean up i.in
+			i.in <- x
+		}
+	}()
 }
 
 // Order determines the order in which items appear on the i3bar. The given

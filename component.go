@@ -15,7 +15,7 @@ type Generator interface {
 // A Producer pushes content updates to the i3bar. It is responsible for
 // generating its' own output in a timely manner
 type Producer interface {
-	Produce(out chan<- Update, kill <-chan struct{})
+	Produce(kill <-chan struct{}) <-chan Update
 }
 
 // A BaseProducer is a simple Producer, which generates output at regular
@@ -41,28 +41,33 @@ func (p BaseProducer) sendOutput(out chan<- Update, data []Output) {
 
 // Produce implements Producer. It creates a new value from the Generator every
 // interval, and sends it down the provided channel
-func (p *BaseProducer) Produce(out chan<- Update, kill <-chan struct{}) {
-	t := time.NewTicker(p.Interval)
-	defer t.Stop()
+func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan Update {
+	out := make(chan Update)
+	go func() {
+		defer close(out)
+		t := time.NewTicker(p.Interval)
+		defer t.Stop()
 
-	// Generate first pack to deliver information fast
-	data, err := p.Generate()
-	if err != nil {
-		return
-	}
-	p.sendOutput(out, data)
-
-	for {
-		select {
-		case <-t.C:
-			data, err := p.Generate()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", p.Name, err)
-				continue
-			}
-
-			// Attempt to send the output
-			p.sendOutput(out, data)
+		// Generate first pack to deliver information fast
+		data, err := p.Generate()
+		if err != nil {
+			return
 		}
-	}
+		p.sendOutput(out, data)
+
+		for {
+			select {
+			case <-t.C:
+				data, err := p.Generate()
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", p.Name, err)
+					continue
+				}
+
+				// Attempt to send the output
+				p.sendOutput(out, data)
+			}
+		}
+	}()
+	return out
 }
