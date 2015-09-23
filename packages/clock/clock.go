@@ -17,14 +17,6 @@ type multiClock struct {
 	multiProducer i3.MultiProducer
 }
 
-//func MultiClock(format string, times map[string]time.Timezone) Generator {
-//	clocks := make(map[string]Clock)
-//	for abbr, zone := range times {
-//	}
-//}
-
-//func (m *Multi
-
 // Generate implements i3.Generator
 func (c Clock) Generate() ([]i3.Output, error) {
 	if c.Location == "" {
