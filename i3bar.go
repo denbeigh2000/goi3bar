@@ -20,13 +20,13 @@ type Registerer interface {
 
 // Output represends a single item on the i3bar.
 type Output struct {
-	Align     string `json:"align,omitEmpty"`
-	Color     string `json:"color,omitEmpty"`
+	Align     string `json:"align,omitempty"`
+	Color     string `json:"color,omitempty"`
 	FullText  string `json:"full_text"`
-	Instance  string `json:"instance,omitEmpty"`
-	MinWidth  string `json:"min_width,omitEmpty"`
-	Name      string `json:"name,omitEmpty"`
-	ShortText string `json:"short_text,omitEmpty"`
+	Instance  string `json:"instance,omitempty"`
+	MinWidth  string `json:"min_width,omitempty"`
+	Name      string `json:"name,omitempty"`
+	ShortText string `json:"short_text,omitempty"`
 	Separator bool   `json:"separator"`
 	Urgent    bool   `json:"urgent"`
 }
