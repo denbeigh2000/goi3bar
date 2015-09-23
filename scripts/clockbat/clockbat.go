@@ -31,7 +31,9 @@ func main() {
 		Name:      "bat",
 	}
 
-	clockGen := clock.NewClock("%a %d-%b-%y %I:%M:%S")
+	clockGen := clock.Clock{
+		Format: "%a %d-%b-%y %I:%M:%S",
+	}
 
 	clockProd := &i3.BaseProducer{
 		Generator: clockGen,
