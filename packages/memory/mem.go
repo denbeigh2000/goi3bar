@@ -1,7 +1,7 @@
 package memory
 
 import (
-	i3 "bitbucket.org/denbeigh2000/goi3bar"
+	i3 "github.com/denbeigh2000/goi3bar"
 
 	"github.com/pivotal-golang/bytefmt"
 

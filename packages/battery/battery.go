@@ -1,7 +1,7 @@
 package battery
 
 import (
-	i3 "bitbucket.org/denbeigh2000/goi3bar"
+	i3 "github.com/denbeigh2000/goi3bar"
 
 	cfg "github.com/alyu/configparser"
 

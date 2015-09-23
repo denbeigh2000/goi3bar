@@ -1,10 +1,10 @@
 package main
 
 import (
-	i3 "bitbucket.org/denbeigh2000/goi3bar"
-	"bitbucket.org/denbeigh2000/goi3bar/packages/battery"
-	"bitbucket.org/denbeigh2000/goi3bar/packages/clock"
-	"bitbucket.org/denbeigh2000/goi3bar/packages/memory"
+	i3 "github.com/denbeigh2000/goi3bar"
+	"github.com/denbeigh2000/goi3bar/packages/battery"
+	"github.com/denbeigh2000/goi3bar/packages/clock"
+	"github.com/denbeigh2000/goi3bar/packages/memory"
 
 	"time"
 )
