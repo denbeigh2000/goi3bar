@@ -11,9 +11,12 @@ import (
 )
 
 func main() {
-	cpu := cpu.Cpu{}
+	cpu := cpu.Cpu{
+		WarnThreshold: 0.7,
+		CritThreshold: 0.95,
+	}
 	cpuProd := &i3.BaseProducer{
-		Generator: cpu,
+		Generator: &cpu,
 		Interval:  5 * time.Second,
 		Name:      "cpu",
 	}

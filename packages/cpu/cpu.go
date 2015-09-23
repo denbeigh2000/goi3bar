@@ -10,7 +10,16 @@ import (
 	"strconv"
 )
 
-type Cpu struct{}
+type Cpu struct {
+	// If the CPU loads exceeds these thresholds, they will be rendered in the
+	// corresponding state.
+	WarnThreshold float64
+	CritThreshold float64
+
+	oneLoad     float64
+	fiveLoad    float64
+	fifteenLoad float64
+}
 
 const (
 	WarnThreshold = 0.7
@@ -26,7 +35,7 @@ var (
 )
 
 // Generate implements Generator
-func (c Cpu) Generate() ([]i3.Output, error) {
+func (c *Cpu) Generate() ([]i3.Output, error) {
 	f, err := os.Open(LoadavgPath)
 	if err != nil {
 		return nil, err
@@ -48,27 +57,35 @@ func (c Cpu) Generate() ([]i3.Output, error) {
 				LoadavgPath, len(matches), expMatches+1)
 	}
 
-	values := matches[1:4]
+	c.oneLoad, err = strconv.ParseFloat(matches[1], 32)
+	if err != nil {
+		return nil, err
+	}
+
+	c.fiveLoad, err = strconv.ParseFloat(matches[2], 32)
+	if err != nil {
+		return nil, err
+	}
+
+	c.fifteenLoad, err = strconv.ParseFloat(matches[3], 32)
+	if err != nil {
+		return nil, err
+	}
+
 	outputs := make([]i3.Output, expMatches)
-
-	for i, v := range values {
-		valueF, err := strconv.ParseFloat(v, 32)
-		if err != nil {
-			return nil, err
-		}
-
+	for i, l := range []float64{c.oneLoad, c.fiveLoad, c.fifteenLoad} {
 		var color string
 		switch {
-		case valueF >= CritThreshold:
+		case l >= c.CritThreshold:
 			color = "#FF0000"
-		case valueF >= WarnThreshold:
+		case l >= c.WarnThreshold:
 			color = "#FFA500"
 		default:
 			color = "#00FF00"
 		}
 
 		outputs[i] = i3.Output{
-			FullText:  v,
+			FullText:  strconv.FormatFloat(l, 'f', 2, 64),
 			Color:     color,
 			Separator: i == expMatches-1,
 		}
