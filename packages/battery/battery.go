@@ -12,40 +12,41 @@ import (
 
 const BatteryPath = "/sys/class/power_supply/%v/uevent"
 
-type batInfo struct {
-	Status   string `toml:"POWER_SUPPLY_STATUS"`
-	Present  bool   `toml:"POWER_SUPPLY_PRESENT"`
-	Capacity int    `toml:"POWER_SUPPLY_CAPACITY"`
-
-	FullCharge     int `toml:"POWER_SUPPLY_CHARGE_FULL"`
-	CurrentCharge  int `toml:"POWER_SUPPLY_CHARGE_NOW"`
-	CurrentCurrent int `toml:"POWER_SUPPLY_CURRENT_NOW"`
+func calcChargeTime(fullCharge float64, currentCharge float64, powerUse float64) time.Duration {
+	return time.Duration(60*60*(fullCharge-currentCharge)/powerUse) * time.Second
 }
 
-//func NewMultiBattery(names map[string]string, update time.Duration) (map[string]*i3.Item, error) {
-//	items := make(map[string]*i3.Item, len(names))
-//
-//	for id, name := range names {
-//		bat := &Battery{
-//			Name:       name,
-//			Identifier: id,
-//		}
-//
-//		items[id] = i3.NewItem(update, bat)
-//		items[id].Name = id
-//	}
-//
-//	return items, nil
-//}
+func calcDepleteTime(currentCharge float64, powerUse float64) time.Duration {
+	return time.Duration(60*60*(currentCharge/powerUse)) * time.Second
+}
 
 type Battery struct {
-	Name       string
+	// A friently name used to show the battery in the taskbar. Can be empty.
+	Name string
+	// A short string used to identify the battery to the system, e.g. BAT0.
+	// Should be found in /sys/class/power_supply/<BATTERY_ID>
 	Identifier string
-	Level      int
-	Status     string
-	Present    bool
 
-	Remaining time.Duration
+	// If the battery level is below this percentage amount, the battery will
+	// be rendered int a warning colour
+	WarnThreshold int
+	// If the battery level is below this percentage amount, the battery will
+	// be rendered int a critical colour
+	CritThreshold int
+
+	level     int
+	present   bool
+	status    string
+	remaining time.Duration
+}
+
+func (b Battery) Crit() bool {
+	return b.level < b.CritThreshold ||
+		!b.present
+}
+
+func (b Battery) Warn() bool {
+	return b.status == "Discharging" && b.level < b.WarnThreshold
 }
 
 func (b *Battery) update() error {
@@ -61,8 +62,8 @@ func (b *Battery) update() error {
 		return err
 	}
 
-	b.Present = c.ValueOf("POWER_SUPPLY_PRESENT") == "1"
-	b.Status = c.ValueOf("POWER_SUPPLY_STATUS")
+	b.present = c.ValueOf("POWER_SUPPLY_PRESENT") == "1"
+	b.status = c.ValueOf("POWER_SUPPLY_STATUS")
 
 	fullCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_FULL"), 32)
 	currentCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_NOW"), 32)
@@ -70,24 +71,25 @@ func (b *Battery) update() error {
 
 	currentPerc, _ := strconv.Atoi(c.ValueOf("POWER_SUPPLY_CAPACITY"))
 
-	b.Level = currentPerc
+	b.level = currentPerc
 
 	if powerUse == 0 {
-		b.Remaining = 0 * time.Hour
+		b.remaining = 0 * time.Hour
 	} else {
-		switch b.Status {
+		switch b.status {
 		case "Charging":
-			b.Remaining = time.Duration(60*60*(fullCharge-currentCharge)/powerUse) * time.Second
+			b.remaining = calcChargeTime(fullCharge, currentCharge, powerUse)
 		case "Discharging":
-			b.Remaining = time.Duration(60*60*(currentCharge/powerUse)) * time.Second
+			b.remaining = calcDepleteTime(currentCharge, powerUse)
 		case "Full":
-			b.Remaining = 0 * time.Hour
+			b.remaining = 0 * time.Hour
 		}
 	}
 
 	return nil
 }
 
+// Generate implements Generator
 func (b *Battery) Generate() (out []i3.Output, err error) {
 	err = b.update()
 	if err != nil {
@@ -100,20 +102,28 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 		out[0] = o
 	}()
 
-	if !b.Present {
+	if !b.present {
 		o.FullText = fmt.Sprintf("Battery %v not present", b.Identifier)
 		o.Color = "#FF0000"
 		return
 	}
 
-	text := fmt.Sprintf("%v %v %v%% %v", b.Name, b.Status, b.Level, b.Remaining)
-	switch {
-	case !b.Present || b.Level < 15:
-		o.Color = "#FF0000"
-	case b.Status == "Charging" || b.Status == "Full" || b.Status == "Discharging" && b.Level >= 35:
-		o.Color = "#00FF00"
+	var remain interface{}
+	switch b.remaining {
+	case time.Duration(0):
+		remain = "N/A"
 	default:
+		remain = b.remaining
+	}
+
+	text := fmt.Sprintf("%v %v %v%% %v", b.Name, b.status, b.level, remain)
+	switch {
+	case b.Crit():
+		o.Color = "#FF0000"
+	case b.Warn():
 		o.Color = "#FFA500"
+	default:
+		o.Color = "#00FF00"
 	}
 
 	o.FullText = text
