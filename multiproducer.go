@@ -1,5 +1,7 @@
 package goi3bar
 
+import "sync"
+
 // MultiProducer is a simple Producer that groups multiple Producers.
 type MultiProducer struct {
 	producers map[string]Producer
@@ -11,10 +13,26 @@ func NewMultiProducer(m map[string]Producer) MultiProducer {
 }
 
 // Produce implements Producer
-func (m MultiProducer) Produce(out chan<- Update, kill <-chan struct{}) {
+func (m MultiProducer) Produce(kill <-chan struct{}) <-chan Update {
+	out := make(chan Update)
+	wg := sync.WaitGroup{}
 	for _, p := range m.producers {
-		go p.Produce(out, kill)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ch := p.Produce(kill)
+			for x := range ch {
+				out <- x
+			}
+		}()
 	}
+
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	return out
 }
 
 // MultiRegister takes a Registerer and uses it to register all of its'
