@@ -1,4 +1,4 @@
-package main
+package cloclbatmemcpu
 
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
