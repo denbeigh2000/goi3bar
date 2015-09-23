@@ -14,14 +14,11 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
-type Producer interface {
-	Produce(out chan<- Update, kill <-chan struct{})
-}
-
 type Registerer interface {
 	Register(key string, p Producer)
 }
 
+// Output represends a single item on the i3bar.
 type Output struct {
 	Align     string `json:"align,omitEmpty"`
 	Color     string `json:"color,omitEmpty"`
@@ -34,6 +31,9 @@ type Output struct {
 	Urgent    bool   `json:"urgent"`
 }
 
+// output is a helper function that sends the initial data to i3bar, and then
+// listens to the incoming channel, encodes the data to JSON and writes it to
+// stdout
 func output(ch <-chan []Output) {
 	fmt.Fprintf(os.Stdout, intro)
 	fmt.Fprintf(os.Stdout, "[\n")
@@ -73,11 +73,15 @@ func output(ch <-chan []Output) {
 	}
 }
 
+// Update is a packet, received from a Producer, that updates the current
+// Outputs matching the given Key. The Key should correspond to a registered
+// Producer.
 type Update struct {
 	Key string
 	Out []Output
 }
 
+// I3bar is the data structure that represents a single i3bar.
 type I3bar struct {
 	producers map[string]Producer
 	values    map[string][]Output
@@ -88,6 +92,8 @@ type I3bar struct {
 	kill      chan struct{}
 }
 
+// NewI3bar returns a new *I3bar. The update duration determines how often data
+// will be sent to i3bar through stdout
 func NewI3bar(update time.Duration) *I3bar {
 	return &I3bar{
 		producers: make(map[string]Producer),
@@ -100,14 +106,18 @@ func NewI3bar(update time.Duration) *I3bar {
 	}
 }
 
+// Start starts the i3bar (and all registered Producers)
 func (i *I3bar) Start() {
 	go i.loop()
 }
 
+// Kill kills the i3bar (and all resgistered Producers)
 func (i I3bar) Kill() {
 	close(i.kill)
 }
 
+// Register registers a new Producer with the I3bar. The I3bar expects incoming
+// Update packets to be associated with a key registered with this function
 func (i *I3bar) Register(key string, p Producer) {
 	_, ok := i.producers[key]
 	if ok {
@@ -121,6 +131,8 @@ func (i *I3bar) Register(key string, p Producer) {
 	go p.Produce(i.in, i.kill)
 }
 
+// Order determines the order in which items appear on the i3bar. The given
+// slice must have each registered key appearing in it exactly once.
 func (i *I3bar) Order(keys []string) error {
 	if len(keys) != len(i.producers) {
 		return fmt.Errorf("Number of keys must equal number of items, expected %v got %v",
@@ -137,6 +149,8 @@ func (i *I3bar) Order(keys []string) error {
 	return nil
 }
 
+// collect is a helper function which retrieves the current Outputs from the
+// i3bar.
 func (i *I3bar) collect() []Output {
 	items := make([]Output, 0)
 

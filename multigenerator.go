@@ -2,10 +2,19 @@ package goi3bar
 
 import "sync"
 
+// MultiGenerator is a Generator that combines the output of multiple
+// Generators. Consistent order is not guaranteed across multiple generations
 type MultiGenerator struct {
 	generators []Generator
 }
 
+// NewMultiGenerator takes a slice of generators and returns a single
+// Generator
+func NewMultiGenerator(g []Generator) MultiGenerator {
+	return MultiGenerator{g}
+}
+
+// Generate implements Generator
 func (m MultiGenerator) Generate() ([]Output, error) {
 	out := make([]Output, 0)
 
@@ -23,15 +32,16 @@ func (m MultiGenerator) Generate() ([]Output, error) {
 	return out, nil
 }
 
-func NewMultiGenerator(g []Generator) MultiGenerator {
-	return MultiGenerator{g}
-}
-
+// OrderedMultiGenerator is a Generator that can generate output for multiple
+// Generators, and keeps the order of outputs the same.
 type OrderedMultiGenerator struct {
 	generators map[string]Generator
 	order      []string
 }
 
+// NewOrderedMultiGenerator creates a new OrderedMultiGenerator. It takes a
+// map of key -> generator pairs, as well as a slice of keys specifying the
+// order the items should appear on the bar.
 func NewOrderedMultiGenerator(g map[string]Generator, order []string) Generator {
 	if len(order) != len(g) {
 		panic("Number of keys must be equal")
@@ -46,6 +56,7 @@ func NewOrderedMultiGenerator(g map[string]Generator, order []string) Generator 
 	return &OrderedMultiGenerator{g, order}
 }
 
+// Generate implements Generator
 func (g *OrderedMultiGenerator) Generate() ([]Output, error) {
 	out := make([]Output, len(g.order))
 	wg := sync.WaitGroup{}
