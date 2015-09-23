@@ -10,6 +10,8 @@ import (
 	"strconv"
 )
 
+// Cpu is a small CPU load monitor. It scrapes /proc/loadavg to display your
+// average # waiting threads over 1, 5 and 15 minute averages.
 type Cpu struct {
 	// If the CPU loads exceeds these thresholds, they will be rendered in the
 	// corresponding state.
@@ -22,9 +24,6 @@ type Cpu struct {
 }
 
 const (
-	WarnThreshold = 0.7
-	CritThreshold = 0.85
-
 	expMatches  = 3
 	rxStr       = "^([0-9]+.[0-9]+) ([0-9]+.[0-9]+) ([0-9]+.[0-9]+)"
 	LoadavgPath = "/proc/loadavg"
@@ -34,43 +33,48 @@ var (
 	rx = regexp.MustCompile(rxStr)
 )
 
-// Generate implements Generator
-func (c *Cpu) Generate() ([]i3.Output, error) {
+func (c *Cpu) populateValues() error {
 	f, err := os.Open(LoadavgPath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer f.Close()
 
 	var buf bytes.Buffer
 	_, err = buf.ReadFrom(f)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	matches := rx.FindStringSubmatch(buf.String())
 
 	// There should be total 4 matches - The whole match, then the 3 groups
 	if len(matches) != expMatches+1 {
-		return nil,
-			fmt.Errorf("Incorrect number of matches for %v, (got %v expected %v)",
-				LoadavgPath, len(matches), expMatches+1)
+		return fmt.Errorf("Incorrect number of matches for %v, (got %v expected %v)",
+			LoadavgPath, len(matches), expMatches+1)
 	}
 
 	c.oneLoad, err = strconv.ParseFloat(matches[1], 32)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	c.fiveLoad, err = strconv.ParseFloat(matches[2], 32)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	c.fifteenLoad, err = strconv.ParseFloat(matches[3], 32)
 	if err != nil {
-		return nil, err
+		return err
 	}
+
+	return nil
+}
+
+// Generate implements Generator
+func (c *Cpu) Generate() ([]i3.Output, error) {
+	c.populateValues()
 
 	outputs := make([]i3.Output, expMatches)
 	for i, l := range []float64{c.oneLoad, c.fiveLoad, c.fifteenLoad} {
