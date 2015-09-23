@@ -8,7 +8,8 @@ import (
 )
 
 type Clock struct {
-	Format string
+	Format   string
+	Location string
 }
 
 type multiClock struct {
@@ -26,7 +27,17 @@ type multiClock struct {
 
 // Generate implements i3.Generator
 func (c Clock) Generate() ([]i3.Output, error) {
-	st := timeFormat.Format(c.Format, time.Now())
+	if c.Location == "" {
+		c.Location = "Local"
+	}
+
+	l, err := time.LoadLocation(c.Location)
+	if err != nil {
+		return nil, err
+	}
+
+	t := time.Now()
+	st := timeFormat.Format(c.Format, t.In(l))
 
 	o := i3.Output{
 		FullText:  st,
