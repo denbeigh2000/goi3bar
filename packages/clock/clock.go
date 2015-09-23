@@ -8,7 +8,9 @@ import (
 )
 
 type Clock struct {
-	Format   string
+	// How the time should be formatted. See http://strftime.org/ for reference.
+	Format string
+	// The IANA Timezone database zone name to show the time for
 	Location string
 }
 
