@@ -10,7 +10,10 @@ import (
 	"time"
 )
 
-const BatteryPath = "/sys/class/power_supply/%v/uevent"
+const (
+	BaseBatteryPath = "/sys/class/power_supply"
+	BatteryPath     = BaseBatteryPath + "/%v/uevent"
+)
 
 func calcChargeTime(fullCharge float64, currentCharge float64, powerUse float64) time.Duration {
 	return time.Duration(60*60*(fullCharge-currentCharge)/powerUse) * time.Second
