@@ -12,6 +12,7 @@ type Clock struct {
 	Format string
 	// The IANA Timezone database zone name to show the time for
 	Location string
+	Color    string
 }
 
 type multiClock struct {
@@ -33,9 +34,14 @@ func (c Clock) Generate() ([]i3.Output, error) {
 	t := time.Now()
 	st := timeFormat.Format(c.Format, t.In(l))
 
+	color := c.Color
+	if color == "" {
+		color = "#FFFFFF"
+	}
+
 	o := i3.Output{
 		FullText:  st,
-		Color:     "#FFFFFF",
+		Color:     color,
 		Separator: true,
 	}
 

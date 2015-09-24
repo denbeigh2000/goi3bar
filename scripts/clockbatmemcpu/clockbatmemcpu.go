@@ -46,6 +46,7 @@ func main() {
 
 	clockGen := clock.Clock{
 		Format: "%a %d-%b-%y %I:%M:%S",
+		Color:  "#FFFFFF",
 	}
 
 	clockProd := &i3.BaseProducer{
