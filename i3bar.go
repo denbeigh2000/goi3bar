@@ -131,8 +131,10 @@ func (i *I3bar) Register(key string, p Producer) {
 	out := p.Produce(i.kill)
 	go func() {
 		for x := range out {
-			// TODO: Need to clean up i.in
-			i.in <- x
+			i.in <- Update{
+				Key: key,
+				Out: x,
+			}
 		}
 	}()
 }

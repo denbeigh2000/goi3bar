@@ -15,7 +15,7 @@ type Generator interface {
 // A Producer pushes content updates to the i3bar. It is responsible for
 // generating its' own output in a timely manner
 type Producer interface {
-	Produce(kill <-chan struct{}) <-chan Update
+	Produce(kill <-chan struct{}) <-chan []Output
 }
 
 // A BaseProducer is a simple Producer, which generates output at regular
@@ -37,20 +37,17 @@ func (g StaticGenerator) Generate() ([]Output, error) {
 
 // sendOutput is a helper function that waits up to p.Interval to send the
 // given data down the given output channel, and abandons if it cannot.
-func (p BaseProducer) sendOutput(out chan<- Update, data []Output) {
+func (p BaseProducer) sendOutput(out chan<- []Output, data []Output) {
 	select {
-	case out <- Update{
-		Key: p.Name,
-		Out: data,
-	}:
+	case out <- data:
 	case <-time.After(p.Interval):
 	}
 }
 
 // Produce implements Producer. It creates a new value from the Generator every
 // interval, and sends it down the provided channel
-func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan Update {
-	out := make(chan Update)
+func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
+	out := make(chan []Output)
 	go func() {
 		defer close(out)
 		t := time.NewTicker(p.Interval)
