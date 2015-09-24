@@ -1,5 +1,7 @@
 ## goi3bar
 
+[![GoDoc](https://godoc.org/github.com/denbeigh2000/goi3bar?status.svg)](http://godoc.org/github.com/denbeigh2000/goi3bar)
+
 This is a small JSON generator for i3bar, written in golang
 
 I wrote it because I wanted to take advantage of Go's concurrency support to
