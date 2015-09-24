@@ -20,31 +20,26 @@ func main() {
 		Interval:  5 * time.Second,
 		Name:      "cpu",
 	}
-	mem := memory.Memory{}
-	batteries := make(map[string]i3.Generator, 2)
-	batteries["bat1"] = &battery.Battery{
-		Name:       "ext bat",
-		Identifier: "BAT1",
+
+	batteryNames := map[string]string{
+		"BAT0": "int bat",
+		"BAT1": "ext bat",
 	}
 
+	batteries, err := battery.BatteryDiscover(batteryNames, 35, 15)
+	if err != nil {
+		panic(err)
+	}
+
+	mem := memory.Memory{}
 	memProd := &i3.BaseProducer{
 		Generator: mem,
 		Interval:  5 * time.Second,
 		Name:      "mem",
 	}
 
-	batteries["bat0"] = &battery.Battery{
-		Name:       "int bat",
-		Identifier: "BAT0",
-	}
-
-	batteryOrder := []string{"bat0", "bat1"}
-
-	// bats := battery.NewMultiBattery(batteries, batteryOrder)
-	batGen := i3.NewOrderedMultiGenerator(batteries, batteryOrder)
-
 	batProd := &i3.BaseProducer{
-		Generator: batGen,
+		Generator: batteries,
 		Interval:  5 * time.Second,
 		Name:      "bat",
 	}
