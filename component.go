@@ -27,6 +27,14 @@ type BaseProducer struct {
 	Name     string
 }
 
+// A StaticGenerator is a simple Generator that returns the same Output each time.
+type StaticGenerator []Output
+
+// Generate implements Generator
+func (g StaticGenerator) Generate() ([]Output, error) {
+	return []Output(g), nil
+}
+
 // sendOutput is a helper function that waits up to p.Interval to send the
 // given data down the given output channel, and abandons if it cannot.
 func (p BaseProducer) sendOutput(out chan<- Update, data []Output) {
