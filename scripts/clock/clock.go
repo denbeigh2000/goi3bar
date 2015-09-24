@@ -11,6 +11,7 @@ func main() {
 
 	clock := clock.Clock{
 		Format: "%a %d-%b-%y %I:%M:%S",
+		Color:  "#FFFFFF",
 	}
 
 	item := &i3.BaseProducer{
