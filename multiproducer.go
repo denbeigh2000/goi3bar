@@ -13,8 +13,8 @@ func NewMultiProducer(m map[string]Producer) MultiProducer {
 }
 
 // Produce implements Producer
-func (m MultiProducer) Produce(kill <-chan struct{}) <-chan Update {
-	out := make(chan Update)
+func (m MultiProducer) Produce(kill <-chan struct{}) <-chan []Output {
+	out := make(chan []Output)
 	wg := sync.WaitGroup{}
 	for _, p := range m.producers {
 		wg.Add(1)
