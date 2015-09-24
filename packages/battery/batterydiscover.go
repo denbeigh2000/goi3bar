@@ -15,6 +15,7 @@ var (
 	}
 )
 
+// Creates a list of interfaces that can be uesd by BatteryDiscover
 func findBatteries() ([]string, error) {
 	dirs, err := ioutil.ReadDir(BaseBatteryPath)
 	if err != nil {
@@ -36,12 +37,16 @@ func findBatteries() ([]string, error) {
 	return interfaces, nil
 }
 
+// Discovers batteries on your machine, and returns an OrderedMultiGenerator for each.
+// Include a map of lowercase interface names to friendly names to display the
+// batteries with friendly names.
 func BatteryDiscover(names map[string]string, WarnThreshold, CritThreshold int) (i3.Generator, error) {
 	interfaces, err := findBatteries()
 	if err != nil {
 		return nil, err
 	}
 
+	// Show a useful message if no batteries were found
 	if len(interfaces) == 0 {
 		return i3.StaticGenerator(
 			[]i3.Output{i3.Output{
