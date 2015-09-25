@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-const ethFormat = "Ethernet connected: %v (%v/s)"
+const ethFormat = "Ethernet connected: %v (%vMb/s)"
 
 type EthernetDevice struct {
 	NetworkDevice
@@ -31,7 +31,7 @@ func (d *EthernetDevice) Generate() ([]i3.Output, error) {
 		return nil, err
 	}
 
-	speed := strconv.FormatUint(d.speed/1000, 10) + "Mb"
+	speed := strconv.FormatUint(d.speed/1000, 10)
 
 	text := fmt.Sprintf(ethFormat, d.ip.String(), speed)
 
