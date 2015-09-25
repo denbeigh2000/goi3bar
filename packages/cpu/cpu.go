@@ -3,11 +3,9 @@ package cpu
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
 
-	"bytes"
-	"fmt"
-	"os"
-	"regexp"
 	"strconv"
+
+	"github.com/shirou/gopsutil/load"
 )
 
 // Cpu is a small CPU load monitor. It scrapes /proc/loadavg to display your
@@ -24,51 +22,18 @@ type Cpu struct {
 }
 
 const (
-	expMatches  = 3
-	rxStr       = "^([0-9]+.[0-9]+) ([0-9]+.[0-9]+) ([0-9]+.[0-9]+)"
-	LoadavgPath = "/proc/loadavg"
-)
-
-var (
-	rx = regexp.MustCompile(rxStr)
+	expMatches = 3
 )
 
 func (c *Cpu) populateValues() error {
-	f, err := os.Open(LoadavgPath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(f)
+	load, err := load.LoadAvg()
 	if err != nil {
 		return err
 	}
 
-	matches := rx.FindStringSubmatch(buf.String())
-
-	// There should be total 4 matches - The whole match, then the 3 groups
-	if len(matches) != expMatches+1 {
-		return fmt.Errorf("Incorrect number of matches for %v, (got %v expected %v)",
-			LoadavgPath, len(matches), expMatches+1)
-	}
-
-	c.oneLoad, err = strconv.ParseFloat(matches[1], 32)
-	if err != nil {
-		return err
-	}
-
-	c.fiveLoad, err = strconv.ParseFloat(matches[2], 32)
-	if err != nil {
-		return err
-	}
-
-	c.fifteenLoad, err = strconv.ParseFloat(matches[3], 32)
-	if err != nil {
-		return err
-	}
-
+	c.oneLoad = load.Load1
+	c.fiveLoad = load.Load5
+	c.fifteenLoad = load.Load15
 	return nil
 }
 
