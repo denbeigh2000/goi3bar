@@ -43,12 +43,12 @@ type Battery struct {
 	remaining time.Duration
 }
 
-func (b Battery) Crit() bool {
+func (b *Battery) Crit() bool {
 	return b.level < b.CritThreshold ||
 		!b.present
 }
 
-func (b Battery) Warn() bool {
+func (b *Battery) Warn() bool {
 	return b.status == "Discharging" && b.level < b.WarnThreshold
 }
 
