@@ -8,12 +8,14 @@ import (
 
 // A Generator generates content to put on an i3bar. Other functions will call
 // Generate to create output for the i3bar.
+// A Generator should define how, not when the output is built.
 type Generator interface {
 	Generate() ([]Output, error)
 }
 
 // A Producer pushes content updates to the i3bar. It is responsible for
-// generating its' own output in a timely manner
+// managing how often an item delivers its updates to the i3bar. These updates
+// are usually generated using a Generator.
 type Producer interface {
 	Produce(kill <-chan struct{}) <-chan []Output
 }
