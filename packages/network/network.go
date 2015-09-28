@@ -3,13 +3,17 @@ package network
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
 
+	"fmt"
 	"net"
 	"os/exec"
 	"regexp"
+	"strconv"
 )
 
 const (
-	ipAddrRxStr = "inet\\s+((\\d{1,3}\\.){3}\\d{1,3})"
+	notConnected = "Not connected"
+	ethFormat    = "Connected: %v (%vMb/s)"
+	ipAddrRxStr  = "inet\\s+((\\d{1,3}\\.){3}\\d{1,3})"
 )
 
 var (
@@ -26,6 +30,9 @@ type NetworkDevice struct {
 	Identifier string
 
 	ip net.IP
+	// Link speed in kbits/sec
+	speed     uint64
+	connected bool
 }
 
 func (d *NetworkDevice) Update() error {
@@ -35,10 +42,25 @@ func (d *NetworkDevice) Update() error {
 	}
 
 	matches := ipAddrRx.FindStringSubmatch(string(output))
-
 	d.ip = net.ParseIP(matches[1])
 
+	// TODO: Bring crushing reality upon our users of their network speed
+	d.speed = 1000000
+
 	return nil
+}
+
+func (d *NetworkDevice) Generate() ([]i3.Output, error) {
+	d.Update()
+
+	speed := strconv.FormatUint(d.speed/1000, 10)
+
+	text := fmt.Sprintf(ethFormat, d.ip.String(), speed)
+
+	return []i3.Output{i3.Output{
+		FullText: text,
+		Color:    "#00FF00",
+	}}, nil
 }
 
 // Network is a network applet, consisting of zero or more NetworkDevices,
