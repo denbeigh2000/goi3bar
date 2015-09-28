@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	essidRxStr    = "ESSID:\"(.*)\""
-	strengthRxStr = "Link Quality=(\\d+)/(\\d+)"
+	essidRxStr      = "ESSID:\"(.*)\""
+	strengthRxStr   = "Link Quality=(\\d+)/(\\d+)"
+	notConnectedTpl = "%v not connected"
 )
 
 var (
@@ -99,6 +100,13 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 		return nil, err
 	}
 
+	if !d.connected {
+		return []i3.Output{i3.Output{
+			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
+			Color:    "#FF0000",
+		}}, nil
+	}
+
 	txt := fmt.Sprintf("%v: %v %v%% (%v)", d.Name, d.essid,
 		d.strength, d.ip)
 
@@ -113,8 +121,9 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 	}
 
 	out := i3.Output{
-		FullText: txt,
-		Color:    color,
+		FullText:  txt,
+		Color:     color,
+		Separator: true,
 	}
 
 	return []i3.Output{out}, nil
