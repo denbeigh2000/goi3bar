@@ -12,13 +12,26 @@ import (
 )
 
 func main() {
-	n := network.BasicNetworkDevice{
+	wlan := network.BasicNetworkDevice{
 		Name:       "wifi",
 		Identifier: "wlp3s0",
 	}
 
-	net := network.WLANDevice{
-		BasicNetworkDevice: n,
+	wlanDevice := network.WLANDevice{
+		BasicNetworkDevice: wlan,
+	}
+
+	eth := network.BasicNetworkDevice{
+		Name:       "ethernet",
+		Identifier: "enp0s25",
+	}
+
+	net := network.MultiDevice{
+		Devices: map[string]network.NetworkDevice{
+			"wlp3s0":  &wlanDevice,
+			"enp0s25": &eth,
+		},
+		Preference: []string{"wlp3s0", "enp0s25"},
 	}
 
 	netProd := &i3.BaseProducer{
@@ -83,7 +96,7 @@ func main() {
 	bar.Register("cpu", cpuProd)
 	bar.Register("net", netProd)
 
-	bar.Order([]string{"net", "cpu", "mem", "bat", "time"})
+	bar.Order([]string{"cpu", "mem", "bat", "net", "time"})
 
 	bar.Start()
 	defer bar.Kill()
