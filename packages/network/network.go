@@ -14,10 +14,12 @@ const (
 	notConnected = "Not connected"
 	ethFormat    = "Connected: %v (%vMb/s)"
 	ipAddrRxStr  = "inet\\s+((\\d{1,3}\\.){3}\\d{1,3})"
+	isUpRxStr    = "state\\s+UP"
 )
 
 var (
 	ipAddrRx = regexp.MustCompile(ipAddrRxStr)
+	isUpRx   = regexp.MustCompile(isUpRxStr)
 )
 
 type NetworkDevice interface {
@@ -69,12 +71,19 @@ func (d *BasicNetworkDevice) Connected() bool {
 
 // Update implements NetworkDevice
 func (d *BasicNetworkDevice) Update() error {
-	output, err := exec.Command("ip", "addr", "show", d.Identifier).Output()
+	out, err := exec.Command("ip", "addr", "show", d.Identifier).Output()
 	if err != nil {
 		return err
 	}
 
-	matches := ipAddrRx.FindStringSubmatch(string(output))
+	output := string(out)
+
+	d.connected = isUpRx.MatchString(output)
+	if !d.connected {
+		return nil
+	}
+
+	matches := ipAddrRx.FindStringSubmatch(output)
 	d.ip = net.ParseIP(matches[1])
 
 	// TODO: Bring crushing reality upon our users of their network speed
@@ -87,12 +96,20 @@ func (d *BasicNetworkDevice) Update() error {
 func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 	d.Update()
 
+	if !d.connected {
+		return []i3.Output{i3.Output{
+			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
+			Color:    "#FF0000",
+		}}, nil
+	}
+
 	speed := strconv.FormatUint(d.speed/1000, 10)
 
 	text := fmt.Sprintf(ethFormat, d.ip.String(), speed)
 
 	return []i3.Output{i3.Output{
-		FullText: text,
-		Color:    "#00FF00",
+		FullText:  text,
+		Color:     "#00FF00",
+		Separator: true,
 	}}, nil
 }
