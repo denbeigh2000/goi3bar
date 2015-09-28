@@ -12,18 +12,18 @@ import (
 )
 
 func main() {
-	n := network.NetworkDevice{
-		Name:       "ethernet",
+	n := network.BasicNetworkDevice{
+		Name:       "wifi",
 		Identifier: "wlp3s0",
 	}
 
-	net := network.EthernetDevice{
-		NetworkDevice: n,
+	net := network.WLANDevice{
+		BasicNetworkDevice: n,
 	}
 
 	netProd := &i3.BaseProducer{
 		Generator: &net,
-		Interval:  10 * time.Second,
+		Interval:  2 * time.Second,
 		Name:      "net",
 	}
 
