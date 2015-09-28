@@ -20,9 +20,21 @@ var (
 	ipAddrRx = regexp.MustCompile(ipAddrRxStr)
 )
 
-// A BaseNetworkDevice describes a network device to be displayed on an i3bar
+type NetworkDevice interface {
+	i3.Generator
+
+	FriendlyName() string
+	Interface() string
+	IP() net.IP
+	Speed() uint64
+	Connected() bool
+
+	Update() error
+}
+
+// A BaseBasicNetworkDevice describes a network device to be displayed on an i3bar
 // TODO: Usage speed?
-type NetworkDevice struct {
+type BasicNetworkDevice struct {
 	// A friendly name to be used on the bar
 	Name string
 
@@ -35,7 +47,28 @@ type NetworkDevice struct {
 	connected bool
 }
 
-func (d *NetworkDevice) Update() error {
+func (d *BasicNetworkDevice) FriendlyName() string {
+	return d.Name
+}
+
+func (d *BasicNetworkDevice) Interface() string {
+	return d.Identifier
+}
+
+func (d *BasicNetworkDevice) IP() net.IP {
+	return d.ip
+}
+
+func (d *BasicNetworkDevice) Speed() uint64 {
+	return d.speed
+}
+
+func (d *BasicNetworkDevice) Connected() bool {
+	return d.connected
+}
+
+// Update implements NetworkDevice
+func (d *BasicNetworkDevice) Update() error {
 	output, err := exec.Command("ip", "addr", "show", d.Identifier).Output()
 	if err != nil {
 		return err
@@ -50,7 +83,8 @@ func (d *NetworkDevice) Update() error {
 	return nil
 }
 
-func (d *NetworkDevice) Generate() ([]i3.Output, error) {
+// Generate implements i3.Generator
+func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 	d.Update()
 
 	speed := strconv.FormatUint(d.speed/1000, 10)
@@ -61,19 +95,4 @@ func (d *NetworkDevice) Generate() ([]i3.Output, error) {
 		FullText: text,
 		Color:    "#00FF00",
 	}}, nil
-}
-
-// Network is a network applet, consisting of zero or more NetworkDevices,
-// to be displayed on an i3bar
-type NetworkDeviceCollection struct {
-	// Map of interface name to relevant device
-	Devices map[string]*NetworkDevice
-
-	// Map of interface name to friendly name
-	FriendlyNames map[string]string
-}
-
-// Generate implements Generator
-func (c *NetworkDeviceCollection) Generate() ([]i3.Output, error) {
-	return nil, nil
 }
