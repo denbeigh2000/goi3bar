@@ -84,7 +84,11 @@ func (d *BasicNetworkDevice) Update() error {
 	}
 
 	matches := ipAddrRx.FindStringSubmatch(output)
-	d.ip = net.ParseIP(matches[1])
+	if len(matches) < 2 {
+		d.ip = nil
+	} else {
+		d.ip = net.ParseIP(matches[1])
+	}
 
 	// TODO: Bring crushing reality upon our users of their network speed
 	d.speed = 1000000
@@ -105,7 +109,14 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 
 	speed := strconv.FormatUint(d.speed/1000, 10)
 
-	text := fmt.Sprintf(ethFormat, d.ip.String(), speed)
+	var ip string
+	if d.ip != nil {
+		ip = d.ip.String()
+	} else {
+		ip = "Acquiring IP"
+	}
+
+	text := fmt.Sprintf(ethFormat, ip, speed)
 
 	return []i3.Output{i3.Output{
 		FullText:  text,

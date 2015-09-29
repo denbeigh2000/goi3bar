@@ -107,8 +107,15 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 		}}, nil
 	}
 
+	var ip string
+	if d.ip == nil {
+		ip = "Acquiring IP"
+	} else {
+		ip = d.ip.String()
+	}
+
 	txt := fmt.Sprintf("%v: %v %v%% (%v)", d.Name, d.essid,
-		d.strength, d.ip)
+		d.strength, ip)
 
 	var color string
 	switch {
