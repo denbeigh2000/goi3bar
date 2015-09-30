@@ -24,9 +24,9 @@ Currently have:
  - CPU load averages (with configurable color thresholds)
  - Battery values (with automagic discovery and configurable thresholds)
  - Network info with funky applet which only shows most preferred connected network
-
-Want to have:
  - Disk read/write rates
  - Disk usage
+
+Want to have:
  - Unit testing!
  - More configurability for memory, battery moinitors (e.g., formattable)
