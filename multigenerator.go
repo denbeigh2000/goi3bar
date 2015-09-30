@@ -1,6 +1,9 @@
 package goi3bar
 
-import "sync"
+import (
+	"log"
+	"sync"
+)
 
 // MultiGenerator is a Generator that combines the output of multiple
 // Generators. Consistent order is not guaranteed across multiple generations
@@ -64,8 +67,13 @@ func (g *OrderedMultiGenerator) Generate() ([]Output, error) {
 	for i, gen := range g.order {
 		wg.Add(1)
 		go func(i int, g Generator) {
-			output, _ := g.Generate()
-			out[i] = output[0]
+			output, err := g.Generate()
+			if err != nil {
+				log.Printf("Error concurrently generating: %v\n", err)
+			}
+			if len(output) > 0 {
+				out[i] = output[0]
+			}
 			wg.Done()
 		}(i, g.generators[gen])
 	}
