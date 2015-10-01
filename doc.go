@@ -29,5 +29,4 @@ BaseProducer struct with a Generator, and giving it an interval. The
 BaseProducer will call Generate every interval, and push the resultant
 updates down the channel.
 */
-
 package goi3bar
