@@ -16,43 +16,62 @@ type CpuPerc struct {
 	// corresponding state.
 	WarnThreshold float64
 	CritThreshold float64
+	Interval      time.Duration
 
-	collecting bool
-	percentage float64
+	collecting  bool
+	percentages chan float64
 }
 
 func (c *CpuPerc) collect() {
-	for {
-		percentages, err := cpu.CPUPercent(5*time.Second, false)
+	c.collecting = true
+
+	for c.collecting == true {
+		percentages, err := cpu.CPUPercent(c.Interval, false)
 		if err != nil {
 			continue
 		}
-		c.percentage = percentages[0]
+		c.percentages <- percentages[0]
 	}
 }
 
-// Generate implements Generator
-func (c *CpuPerc) Generate() ([]i3.Output, error) {
-	if !c.collecting {
-		c.collecting = true
-		go c.collect()
-	}
+func (c CpuPerc) generateOutput(p float64) []i3.Output {
 
 	var color string
 	switch {
-	case c.percentage >= c.CritThreshold:
+	case p >= c.CritThreshold:
 		color = "#FF0000"
-	case c.percentage >= c.WarnThreshold:
+	case p >= c.WarnThreshold:
 		color = "#FFA500"
 	default:
 		color = "#00FF00"
 	}
 
-	output := i3.Output{
-		FullText:  fmt.Sprintf("CPU: %.2f%%", c.percentage),
+	return []i3.Output{i3.Output{
+		FullText:  fmt.Sprintf("CPU: %.2f%%", p),
 		Color:     color,
 		Separator: true,
-	}
+	}}
+}
 
-	return []i3.Output{output}, nil
+func (c *CpuPerc) Produce(kill <-chan struct{}) <-chan []i3.Output {
+	out := make(chan []i3.Output)
+	c.percentages = make(chan float64)
+
+	go func() {
+		defer close(out)
+		go c.collect()
+		defer func() {
+			c.collecting = false
+		}()
+
+		out <- c.generateOutput(0.0)
+
+		for {
+			select {
+			case p := <-c.percentages:
+				out <- c.generateOutput(p)
+			}
+		}
+	}()
+	return out
 }
