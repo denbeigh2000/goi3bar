@@ -5,7 +5,7 @@ goi3bar is a package that is capable of generating output suitable for i3bar.
 i3bar output is created by outputting JSON, which is defined in the i3bar
 documentation, found at http://i3wm.org/docs/i3bar-protocol.html
 
-How do I output data?
+How to put data on the bar
 
 A single i3bar output struct is represented as an Output. Any applet wanting
 to display information on the bar must create output of type []Output.
