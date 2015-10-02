@@ -5,34 +5,37 @@ import (
 	"strings"
 )
 
+type Bytes float64
+
 const (
-	BYTE     = 1.0
-	KILOBYTE = 1024 * BYTE
-	MEGABYTE = 1024 * KILOBYTE
-	GIGABYTE = 1024 * MEGABYTE
-	TERABYTE = 1024 * GIGABYTE
+	B  Bytes = iota
+	KB       = 1 << (10 * iota)
+	MB
+	GB
+	TB
 )
 
 func ByteFmt(bytes float64) string {
 	unit := ""
-	value := float64(bytes)
+	value := Bytes(bytes)
+	comp := Bytes(bytes)
 
 	switch {
-	case bytes >= TERABYTE:
+	case comp >= TB:
 		unit = "T"
-		value = value / TERABYTE
-	case bytes >= GIGABYTE:
+		value = value / TB
+	case comp >= GB:
 		unit = "G"
-		value = value / GIGABYTE
-	case bytes >= MEGABYTE:
+		value = value / GB
+	case comp >= MB:
 		unit = "M"
-		value = value / MEGABYTE
-	case bytes >= KILOBYTE:
+		value = value / MB
+	case comp >= KB:
 		unit = "K"
-		value = value / KILOBYTE
-	case bytes >= BYTE:
+		value = value / KB
+	case comp >= B:
 		unit = "B"
-	case bytes == 0:
+	case comp == 0:
 		return "0B"
 	}
 
