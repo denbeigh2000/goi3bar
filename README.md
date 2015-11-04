@@ -15,8 +15,8 @@ scripts/scriptname`
 I've tried to include some useful interfaces to make making blocks easy, which
 I will document in godoc later.
 
-Real men put their money where their mouth is! This powers my own i3bar:
-![i3bar](https://i.imgur.com/iewiNim.png)
+Talk is cheap! This powers my own i3bar:
+![i3bar](https://i.imgur.com/B2YBgCZ.png)
 
 Currently have:
  - Formattable clock
