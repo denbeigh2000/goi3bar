@@ -22,20 +22,29 @@ type CpuPerc struct {
 	percentages chan float64
 }
 
-func (c *CpuPerc) collect() {
-	c.collecting = true
+func (c *CpuPerc) report(kill <-chan struct{}) chan float64 {
+	out := make(chan float64)
+	go func() {
+		defer close(out)
 
-	for c.collecting == true {
-		percentages, err := cpu.CPUPercent(c.Interval, false)
-		if err != nil {
-			continue
+		for {
+			select {
+			case <-kill:
+				return
+			default:
+				p, err := cpu.CPUPercent(c.Interval, false)
+				if err != nil {
+					continue
+				}
+				out <- p[0]
+			}
 		}
-		c.percentages <- percentages[0]
-	}
+	}()
+
+	return out
 }
 
-func (c CpuPerc) generateOutput(p float64) []i3.Output {
-
+func (c CpuPerc) format(p float64) []i3.Output {
 	var color string
 	switch {
 	case p >= c.CritThreshold:
@@ -59,17 +68,15 @@ func (c *CpuPerc) Produce(kill <-chan struct{}) <-chan []i3.Output {
 
 	go func() {
 		defer close(out)
-		go c.collect()
-		defer func() {
-			c.collecting = false
-		}()
 
-		out <- c.generateOutput(0.0)
+		percs := c.report(kill)
 
 		for {
 			select {
-			case p := <-c.percentages:
-				out <- c.generateOutput(p)
+			case <-kill:
+				return
+			case p := <-percs:
+				out <- c.format(p)
 			}
 		}
 	}()
