@@ -27,6 +27,8 @@ func (c *CpuPerc) report(kill <-chan struct{}) chan float64 {
 	go func() {
 		defer close(out)
 
+		out <- 0.0
+
 		for {
 			select {
 			case <-kill:
