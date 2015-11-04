@@ -31,9 +31,11 @@ func (m Memory) Generate() ([]i3.Output, error) {
 	if err != nil {
 		return nil, err
 	}
-	percUsed := uint64(mem.UsedPercent)
+
 	total := mem.Total
-	used := mem.Total - mem.Available
+	used := total - mem.Buffers - mem.Cached - mem.Free
+
+	percUsed := uint64(mem.Total / used)
 
 	var color string
 	switch {
