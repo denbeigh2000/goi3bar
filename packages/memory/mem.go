@@ -35,7 +35,7 @@ func (m Memory) Generate() ([]i3.Output, error) {
 	total := mem.Total
 	used := total - mem.Buffers - mem.Cached - mem.Free
 
-	percUsed := uint64(mem.Total / used)
+	percUsed := (100 * used) / total
 
 	var color string
 	switch {
