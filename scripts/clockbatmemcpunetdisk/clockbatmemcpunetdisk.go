@@ -107,19 +107,32 @@ func main() {
 		Name:      "bat",
 	}
 
-	clockGen := clock.Clock{
-		Format: "%a %d-%b-%y %I:%M:%S",
+	SFClockGen := clock.Clock{
+		Format:   "SF: %a %d-%b-%y %I:%M:%S",
+		Location: "America/Los_Angeles",
 	}
 
-	clockProd := &i3.BaseProducer{
-		Generator: clockGen,
+	SydClockGen := clock.Clock{
+		Format:   "Syd: %a %d-%b-%y %I:%M:%S",
+		Location: "Australia/Sydney",
+	}
+
+	SFClockProd := &i3.BaseProducer{
+		Generator: SFClockGen,
 		Interval:  1 * time.Second,
-		Name:      "time",
+		Name:      "SFTime",
+	}
+
+	SydClockProd := &i3.BaseProducer{
+		Generator: SydClockGen,
+		Interval:  1 * time.Second,
+		Name:      "SydTime",
 	}
 
 	bar := i3.NewI3bar(1 * time.Second)
 
-	bar.Register("time", clockProd)
+	bar.Register("SydTime", SydClockProd)
+	bar.Register("SFTime", SFClockProd)
 	bar.Register("bat", batProd)
 	bar.Register("mem", memProd)
 	bar.Register("cpu", cpuProd)
@@ -127,7 +140,7 @@ func main() {
 	bar.Register("net", netProd)
 	bar.Register("disk", diskFreeProd)
 
-	bar.Order([]string{"cpu", "cpuPerc", "mem", "disk", "bat", "net", "time"})
+	bar.Order([]string{"cpu", "cpuPerc", "mem", "disk", "bat", "net", "SydTime", "SFTime"})
 
 	bar.Start()
 	defer bar.Kill()
