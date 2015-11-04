@@ -63,15 +63,22 @@ func main() {
 		Name:      "net",
 	}
 
-	cpu := cpu.Cpu{
+	cpuGen := cpu.Cpu{
 		WarnThreshold: 0.7,
 		CritThreshold: 0.95,
 	}
 	cpuProd := &i3.BaseProducer{
-		Generator: &cpu,
+		Generator: &cpuGen,
 		Interval:  5 * time.Second,
 		Name:      "cpu",
 	}
+
+	cpuPerc := &cpu.CpuPerc{
+		WarnThreshold: 75.0,
+		CritThreshold: 90.0,
+		Interval:      2 * time.Second,
+	}
+
 	mem := memory.Memory{}
 	batteries := make(map[string]i3.Generator, 2)
 	batteries["bat1"] = &battery.Battery{
@@ -116,10 +123,11 @@ func main() {
 	bar.Register("bat", batProd)
 	bar.Register("mem", memProd)
 	bar.Register("cpu", cpuProd)
+	bar.Register("cpuPerc", cpuPerc)
 	bar.Register("net", netProd)
 	bar.Register("disk", diskFreeProd)
 
-	bar.Order([]string{"cpu", "mem", "disk", "bat", "net", "time"})
+	bar.Order([]string{"cpu", "cpuPerc", "mem", "disk", "bat", "net", "time"})
 
 	bar.Start()
 	defer bar.Kill()
