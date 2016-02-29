@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/denbeigh2000/goi3bar?status.svg)](http://godoc.org/github.com/denbeigh2000/goi3bar)
 
-This is a small JSON generator for i3bar, written in golang
+This is a concurrent i3status replacement meant for i3bar, written in golang
 
 I wrote it because I wanted to take advantage of Go's concurrency support to
 easily do some tasks less frequently - changing the time every second but
@@ -12,8 +12,8 @@ less frequently.
 Some sample configurations are in the `scripts/` directory, run them with `go run
 scripts/scriptname`
 
-I've tried to include some useful interfaces to make making blocks easy, which
-I will document in godoc later.
+I've include some useful interfaces to make making blocks easy, which
+are documented in godoc.
 
 Talk is cheap! This powers my own i3bar:
 ![i3bar](https://i.imgur.com/B2YBgCZ.png)
