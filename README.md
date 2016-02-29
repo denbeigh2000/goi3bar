@@ -30,3 +30,4 @@ Currently have:
 Want to have:
  - Unit testing!
  - More configurability for memory, battery moinitors (e.g., formattable)
+ - Support for more batteries(?) This was written for a ThinkPad x240 because that's what I have. Pull requests welcome if some battery functionality does not work on your machine. 
