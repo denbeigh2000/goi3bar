@@ -5,12 +5,15 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"fmt"
 	"io/ioutil"
 	"os"
+	"sync"
+	"time"
 )
 
 type Builder interface {
-	Build(options interface{}) Generator
+	Build(options interface{}) (Producer, error)
 }
 
 type Config struct {
@@ -19,8 +22,11 @@ type Config struct {
 }
 
 type ConfigSet struct {
-	Entries []Config `yaml:"entries"`
+	Entries  []Config `yaml:"entries"`
+	Interval time.Duration
 
+	// Protects builders
+	sync.Mutex
 	builders map[string]Builder
 }
 
@@ -48,6 +54,35 @@ func readConfigSet(path string) (cs ConfigSet, err error) {
 	return cs, nil
 }
 
-func (c ConfigSet) Build() (I3bar, error) {
-	return I3bar{}, nil
+func (c *ConfigSet) Register(key string, builder Builder) {
+	c.Lock()
+	defer c.Unlock()
+
+	if _, ok := c.builders[key]; ok {
+		panic(fmt.Sprintf("Builder %s already exists, cannot reuse keys", key))
+	}
+
+	c.builders[key] = builder
+}
+
+func (c ConfigSet) Build() (bar I3bar, err error) {
+	keys := make([]string, len(c.Entries))
+
+	var producer Producer
+	for i, e := range c.Entries {
+		k := e.Package
+		builder := c.builders[k]
+
+		producer, err = builder.Build(e.Options)
+		if err != nil {
+			return
+		}
+
+		keys[i] = k
+		bar.Register(k, producer)
+	}
+
+	bar.Order(keys)
+
+	return
 }
