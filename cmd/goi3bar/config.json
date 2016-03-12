@@ -1,0 +1,12 @@
+{
+    "entries": [
+        {
+            "package": "memory",
+            "options": {
+                "name": "memory",
+                "refresh": "5s"
+            }
+        }
+    ],
+    "interval": "1s"
+}
