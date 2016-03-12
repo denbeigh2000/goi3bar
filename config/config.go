@@ -3,8 +3,7 @@ package config
 import (
 	. "github.com/denbeigh2000/goi3bar"
 
-	"gopkg.in/yaml.v2"
-
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,29 +11,23 @@ import (
 	"time"
 )
 
-type Builder interface {
-	Build(options interface{}) (Producer, error)
-}
+type BuildFn func(options interface{}) (Producer, error)
 
 type Config struct {
-	Package string      `yaml:"package"`
-	Options interface{} `yaml:"options"`
+	Package string      `json:"package"`
+	Options interface{} `json:"options"`
 }
 
 type ConfigSet struct {
-	Entries  []Config `yaml:"entries"`
-	Interval time.Duration
+	Entries  []Config `json:"entries"`
+	Interval string   `json:"interval"`
 
 	// Protects builders
 	sync.Mutex
-	builders map[string]Builder
+	builders map[string]BuildFn
 }
 
-func ReadConfigFile(path string) (I3bar, error) {
-	return I3bar{}, nil
-}
-
-func readConfigSet(path string) (cs ConfigSet, err error) {
+func ReadConfigSet(path string) (cs ConfigSet, err error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return
@@ -46,7 +39,10 @@ func readConfigSet(path string) (cs ConfigSet, err error) {
 		return
 	}
 
-	err = yaml.Unmarshal(data, cs)
+	cs = ConfigSet{
+		builders: make(map[string]BuildFn),
+	}
+	err = json.Unmarshal(data, &cs)
 	if err != nil {
 		return
 	}
@@ -54,7 +50,7 @@ func readConfigSet(path string) (cs ConfigSet, err error) {
 	return cs, nil
 }
 
-func (c *ConfigSet) Register(key string, builder Builder) {
+func (c *ConfigSet) Register(key string, builder BuildFn) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -65,15 +61,21 @@ func (c *ConfigSet) Register(key string, builder Builder) {
 	c.builders[key] = builder
 }
 
-func (c ConfigSet) Build() (bar I3bar, err error) {
+func (c ConfigSet) Build() (bar *I3bar, err error) {
 	keys := make([]string, len(c.Entries))
+	interval, err := time.ParseDuration(c.Interval)
+	if err != nil {
+		return
+	}
+
+	bar = NewI3bar(interval)
 
 	var producer Producer
 	for i, e := range c.Entries {
 		k := e.Package
 		builder := c.builders[k]
 
-		producer, err = builder.Build(e.Options)
+		producer, err = builder(e.Options)
 		if err != nil {
 			return
 		}
