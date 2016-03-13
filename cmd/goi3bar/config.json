@@ -11,6 +11,28 @@
             }
         },
         {
+            "package": "battery",
+            "name": "intBat",
+            "options": {
+                "interval": "5s",
+                "name": "int bat",
+                "identifier": "BAT0",
+                "warnThreshold": 25,
+                "critThreshold": 15
+            }
+        },
+        {
+            "package": "battery",
+            "name": "extBat",
+            "options": {
+                "interval": "5s",
+                "name": "ext bat",
+                "identifier": "BAT1",
+                "warnThreshold": 25,
+                "critThreshold": 15
+            }
+        },
+        {
             "package": "clock",
             "name": "sydneyTime",
             "options": {
