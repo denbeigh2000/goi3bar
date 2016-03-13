@@ -22,8 +22,7 @@ func Build(options interface{}) (Producer, error) {
 		Refresh: memMap["refresh"].(string),
 	}
 
-	warnThresholdRaw, ok := memMap["warnThreshold"]
-	if ok {
+	if warnThresholdRaw, ok := memMap["warnThreshold"]; ok {
 		warnThreshold, ok := warnThresholdRaw.(float64)
 		if !ok {
 			return nil, fmt.Errorf("Failed to parse given warnThreshold")
@@ -36,8 +35,7 @@ func Build(options interface{}) (Producer, error) {
 		mb.WarnThreshold = int(warnThreshold)
 	}
 
-	critThresholdRaw, ok := memMap["critThreshold"]
-	if ok {
+	if critThresholdRaw, ok := memMap["critThreshold"]; ok {
 		critThreshold, ok := critThresholdRaw.(float64)
 		if !ok {
 			return nil, fmt.Errorf("Failed to parse given critThreshold")
