@@ -9,21 +9,34 @@ import (
 	"fmt"
 )
 
-type Memory struct{}
+type Memory struct {
+	WarnThreshold int
+	CritThreshold int
+}
 
 const (
 	FormatString = "Mem: %v%% (%v/%v)"
 
-	WarnThreshold = 75
-	CritThreshold = 85
+	DefaultWarnThreshold = 75
+	DefaultCritThreshold = 85
 )
 
 func (m Memory) IsWarn(i int) bool {
-	return i >= WarnThreshold
+	switch m.WarnThreshold {
+	case 0:
+		return i >= DefaultWarnThreshold
+	default:
+		return i >= m.WarnThreshold
+	}
 }
 
 func (m Memory) IsCrit(i int) bool {
-	return i >= CritThreshold
+	switch m.CritThreshold {
+	case 0:
+		return i >= DefaultCritThreshold
+	default:
+		return i >= m.CritThreshold
+	}
 }
 
 func (m Memory) Generate() ([]i3.Output, error) {

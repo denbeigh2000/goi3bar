@@ -5,7 +5,9 @@
             "name": "memory",
             "options": {
                 "name": "memory",
-                "refresh": "5s"
+                "refresh": "5s",
+                "warnThreshold": 75,
+                "critThreshold": 85
             }
         },
         {

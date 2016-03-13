@@ -22,6 +22,34 @@ func Build(options interface{}) (Producer, error) {
 		Refresh: memMap["refresh"].(string),
 	}
 
+	warnThresholdRaw, ok := memMap["warnThreshold"]
+	if ok {
+		warnThreshold, ok := warnThresholdRaw.(float64)
+		if !ok {
+			return nil, fmt.Errorf("Failed to parse given warnThreshold")
+		}
+
+		if warnThreshold > 100 || warnThreshold < 1 {
+			return nil, fmt.Errorf("Invalid value for warnThreshold: %.0f", warnThreshold)
+		}
+
+		mb.WarnThreshold = int(warnThreshold)
+	}
+
+	critThresholdRaw, ok := memMap["critThreshold"]
+	if ok {
+		critThreshold, ok := critThresholdRaw.(float64)
+		if !ok {
+			return nil, fmt.Errorf("Failed to parse given critThreshold")
+		}
+
+		if critThreshold > 100 || critThreshold < 1 {
+			return nil, fmt.Errorf("Invalid value for critThreshold: %.0f", critThreshold)
+		}
+
+		mb.CritThreshold = int(critThreshold)
+	}
+
 	return mb.Build()
 }
 
@@ -39,6 +67,8 @@ func (m memoryBuilder) Build() (Producer, error) {
 }
 
 type memoryBuilder struct {
-	Name    string `json:"name"`
-	Refresh string `json:"refresh"`
+	Name          string
+	Refresh       string
+	WarnThreshold int
+	CritThreshold int
 }
