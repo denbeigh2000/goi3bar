@@ -15,6 +15,7 @@ type BuildFn func(options interface{}) (Producer, error)
 
 type Config struct {
 	Package string      `json:"package"`
+	Name    string      `json:"name"`
 	Options interface{} `json:"options"`
 }
 
@@ -73,7 +74,11 @@ func (c ConfigSet) Build() (bar *I3bar, err error) {
 	var producer Producer
 	for i, e := range c.Entries {
 		k := e.Package
-		builder := c.builders[k]
+		builder, ok := c.builders[k]
+		if !ok {
+			err = fmt.Errorf("Could not instantiate builder %v, unknown", k)
+			return
+		}
 
 		producer, err = builder(e.Options)
 		if err != nil {
@@ -81,7 +86,7 @@ func (c ConfigSet) Build() (bar *I3bar, err error) {
 		}
 
 		keys[i] = k
-		bar.Register(k, producer)
+		bar.Register(e.Name, producer)
 	}
 
 	bar.Order(keys)

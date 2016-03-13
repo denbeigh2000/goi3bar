@@ -2,9 +2,28 @@
     "entries": [
         {
             "package": "memory",
+            "name": "memory",
             "options": {
                 "name": "memory",
                 "refresh": "5s"
+            }
+        },
+        {
+            "package": "clock",
+            "name": "sydneyTime",
+            "options": {
+                "format": "Sydney: %a %d-%b-%y %I:%M:%S",
+                "color": "#FFFFFF",
+                "location": "Australia/Sydney"
+            }
+        },
+        {
+            "package": "clock",
+            "name": "localTime",
+            "options": {
+                "format": "Local: %a %d-%b-%y %I:%M:%S",
+                "color": "#FFFFFF",
+                "location": ""
             }
         }
     ],
