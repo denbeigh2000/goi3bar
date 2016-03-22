@@ -49,6 +49,17 @@
                 "color": "#FFFFFF",
                 "location": ""
             }
+        },
+        {
+            "package": "network",
+            "name": "network",
+            "options": {
+                "interval": "5s",
+                "deviceConfig": {
+                    "name": "eth",
+                    "identifier": "enp0s25"
+                }
+            }
         }
     ],
     "interval": "1s"

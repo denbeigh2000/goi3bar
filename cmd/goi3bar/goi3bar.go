@@ -5,6 +5,7 @@ import (
 	"github.com/denbeigh2000/goi3bar/packages/battery"
 	"github.com/denbeigh2000/goi3bar/packages/clock"
 	"github.com/denbeigh2000/goi3bar/packages/memory"
+	"github.com/denbeigh2000/goi3bar/packages/network"
 )
 
 // TODO: Flags
@@ -19,6 +20,7 @@ func main() {
 	cs.Register("memory", memory.Build)
 	cs.Register("clock", clock.Build)
 	cs.Register("battery", battery.Build)
+	cs.Register("network", network.Build)
 
 	bar, err := cs.Build()
 	if err != nil {
