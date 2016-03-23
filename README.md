@@ -18,6 +18,9 @@ are documented in godoc.
 Talk is cheap! This powers my own i3bar:
 ![i3bar](https://i.imgur.com/B2YBgCZ.png)
 
+In the works:
+ - Configuration via JSON (no recompiling)
+
 Currently have:
  - Formattable clock
  - Memory usage (with configurable color thresholds)
