@@ -2,8 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
+	"io"
 )
 
 // This feels so wrong and it really oughtn't to exist. However, this really
@@ -23,23 +22,10 @@ func jsonReparse(i, o interface{}) (err error) {
 
 // ReadConfigSet reads the JSON file referenced at path, and returns a ConfigSet
 // representing that configuration
-func ReadConfigSet(path string) (cs ConfigSet, err error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-
-	data, err := ioutil.ReadAll(f)
-	if err != nil {
-		return
-	}
-
+func ReadConfigSet(r io.Reader) (cs ConfigSet, err error) {
+	dec := json.NewDecoder(r)
 	cs = ConfigSet{}
-	err = json.Unmarshal(data, &cs)
-	if err != nil {
-		return
-	}
+	err = dec.Decode(&cs)
 
-	return cs, nil
+	return
 }
