@@ -7,27 +7,35 @@ import (
 	"time"
 )
 
+// MemoryConfig represents the configuration for a Memory plugin in
+// JSON format
+type MemoryConfig struct {
+	Interval      string `json:"interval"`
+	WarnThreshold int    `json:"warn_threshold"`
+	CritThreshold int    `json:"crit_threshold"`
+}
+
+type memoryBuilder struct{}
+
 func (m memoryBuilder) Build(c config.Config) (Producer, error) {
-	err := c.ParseConfig(&m)
+	conf := MemoryConfig{}
+	err := c.ParseConfig(&conf)
 	if err != nil {
 		return nil, err
 	}
 
-	interval, err := time.ParseDuration(m.Refresh)
+	interval, err := time.ParseDuration(conf.Interval)
 	if err != nil {
 		return nil, err
 	}
 
 	return &BaseProducer{
 		Generator: Memory{},
-		Name:      m.Name,
+		Name:      "memory",
 		Interval:  interval,
 	}, nil
 }
 
-type memoryBuilder struct {
-	Name          string
-	Refresh       string
-	WarnThreshold int
-	CritThreshold int
+func init() {
+	config.Register("memory", memoryBuilder{})
 }

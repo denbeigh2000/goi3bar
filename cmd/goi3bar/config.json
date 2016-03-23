@@ -4,8 +4,7 @@
             "package": "memory",
             "name": "memory",
             "options": {
-                "name": "memory",
-                "refresh": "5s",
+                "interval": "5s",
                 "warnThreshold": 75,
                 "critThreshold": 85
             }
