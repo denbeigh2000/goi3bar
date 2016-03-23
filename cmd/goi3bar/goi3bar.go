@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/denbeigh2000/goi3bar/config"
-	"github.com/denbeigh2000/goi3bar/packages/battery"
-	"github.com/denbeigh2000/goi3bar/packages/clock"
-	"github.com/denbeigh2000/goi3bar/packages/memory"
-	"github.com/denbeigh2000/goi3bar/packages/network"
+	// "github.com/denbeigh2000/goi3bar/packages/battery"
+	_ "github.com/denbeigh2000/goi3bar/packages/clock"
+	// "github.com/denbeigh2000/goi3bar/packages/memory"
+	// "github.com/denbeigh2000/goi3bar/packages/network"
 )
 
 // TODO: Flags
@@ -16,11 +16,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	cs.Register("memory", memory.Build)
-	cs.Register("clock", clock.Build)
-	cs.Register("battery", battery.Build)
-	cs.Register("network", network.Build)
 
 	bar, err := cs.Build()
 	if err != nil {
