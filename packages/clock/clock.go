@@ -12,10 +12,10 @@ var CorruptedConfigErr = errors.New("Could not parse config options")
 
 type Clock struct {
 	// How the time should be formatted. See http://strftime.org/ for reference.
-	Format string
+	Format string `json:"format"`
 	// The IANA Timezone database zone name to show the time for
-	Location string
-	Color    string
+	Location string `json:"location"`
+	Color    string `json:"color"`
 }
 
 // Generate implements i3.Generator
@@ -44,25 +44,4 @@ func (c Clock) Generate() ([]i3.Output, error) {
 	}
 
 	return []i3.Output{o}, nil
-}
-
-func Build(options interface{}) (i3.Producer, error) {
-	optMap, ok := options.(map[string]interface{})
-	if !ok {
-		return nil, CorruptedConfigErr
-	}
-
-	c := Clock{
-		Color:    optMap["color"].(string),
-		Format:   optMap["format"].(string),
-		Location: optMap["location"].(string),
-	}
-
-	item := i3.BaseProducer{
-		Generator: c,
-		Interval:  1 * time.Second,
-		Name:      "time",
-	}
-
-	return &item, nil
 }
