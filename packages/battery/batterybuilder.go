@@ -2,80 +2,62 @@ package battery
 
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
+	"github.com/denbeigh2000/goi3bar/config"
 
 	"fmt"
 	"time"
 )
 
-func Build(optsRaw interface{}) (i3.Producer, error) {
-	options, ok := optsRaw.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("Failed to parse battery JSON")
-	}
+type batteryConfig struct {
+	Interval      string `json:"interval"`
+	Name          string `json:"name"`
+	Identifier    string `json:"identifiter"`
+	WarnThreshold int    `json:"warn_threshold"`
+	CritThreshold int    `json:"crit_threshold"`
+}
 
-	idRaw, ok := options["identifier"]
-	if !ok {
-		return nil, fmt.Errorf("Battery missing identifier")
-	}
-	id, ok := idRaw.(string)
-	if !ok {
-		return nil, fmt.Errorf("Identifier not a valid string")
-	}
+type batteryBuilder struct{}
 
-	intervalRaw, ok := options["interval"]
-	if !ok {
-		return nil, fmt.Errorf("Battery missing interval")
-	}
-	intervalStr, ok := intervalRaw.(string)
-	if !ok {
-		return nil, fmt.Errorf("Interval not a valid string")
-	}
-	interval, err := time.ParseDuration(intervalStr)
+func (b batteryBuilder) Build(c config.Config) (i3.Producer, error) {
+	conf := batteryConfig{}
+	err := c.ParseConfig(&conf)
 	if err != nil {
 		return nil, err
 	}
 
+	interval, err := time.ParseDuration(conf.Interval)
+	if err != nil {
+		return nil, err
+	}
+
+	if !validateThreshold(conf.WarnThreshold) {
+		return nil, fmt.Errorf("WarnThreshold for %v (%v) is outside acceptable range (0, 100)", conf.WarnThreshold)
+	}
+
+	if !validateThreshold(conf.CritThreshold) {
+		return nil, fmt.Errorf("CritThreshold for %v (%v) is outside acceptable range (0, 100)", conf.CritThreshold)
+	}
+
 	bat := Battery{
-		Identifier: id,
-	}
-
-	if nameRaw, ok := options["name"]; ok {
-		if name, ok := nameRaw.(string); ok {
-			bat.Name = name
-		} else {
-			return nil, fmt.Errorf("Failed to parse battery name")
-		}
-	}
-
-	if warnThresholdRaw, ok := options["warnThreshold"]; ok {
-		warnThreshold, ok := warnThresholdRaw.(float64)
-		if !ok {
-			return nil, fmt.Errorf("Failed to parse given warnThreshold")
-		}
-
-		if warnThreshold > 100 || warnThreshold < 1 {
-			return nil, fmt.Errorf("Invalid value for warnThreshold: %.0f", warnThreshold)
-		}
-
-		bat.WarnThreshold = int(warnThreshold)
-	}
-
-	if critThresholdRaw, ok := options["critThreshold"]; ok {
-		critThreshold, ok := critThresholdRaw.(float64)
-		if !ok {
-			return nil, fmt.Errorf("Failed to parse given critThreshold")
-		}
-
-		if critThreshold > 100 || critThreshold < 1 {
-			return nil, fmt.Errorf("Invalid value for critThreshold: %.0f", critThreshold)
-		}
-
-		bat.CritThreshold = int(critThreshold)
+		Name:          conf.Name,
+		Identifier:    conf.Identifier,
+		WarnThreshold: conf.WarnThreshold,
+		CritThreshold: conf.CritThreshold,
 	}
 
 	return &i3.BaseProducer{
 		Generator: &bat,
 		Interval:  interval,
-		Name:      "bat",
+		Name:      conf.Identifier + "_bat",
 	}, nil
+}
+
+func validateThreshold(v int) (cond bool) {
+	cond = v < 0 || v > 100
+
+	return
+}
+
+func init() {
+	config.Register("battery", batteryBuilder{})
 }
