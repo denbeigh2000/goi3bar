@@ -2,7 +2,6 @@ package config
 
 import (
 	. "github.com/denbeigh2000/goi3bar"
-	i3util "github.com/denbeigh2000/goi3bar/util"
 
 	"fmt"
 	"sync"
@@ -38,8 +37,8 @@ func (c Config) ParseConfig(i interface{}) error {
 	return jsonReparse(c.Options, i)
 }
 
-// ConfigSet represents an entire JSON config file. You shouldn't need to use
-// this.
+// ConfigSet represents an entire JSON config file. If all goes well, it
+// creates an I3bar.
 type ConfigSet struct {
 	Entries  []Config `json:"entries"`
 	Interval string   `json:"interval"`
@@ -82,6 +81,9 @@ func (c ConfigSet) Build() (bar *I3bar, err error) {
 	return
 }
 
+// Register is the registration point of your plugin to the Configuration
+// namespace. Use a unique key, and your Builder will be called for entries
+// with that package key
 func Register(key string, builder Builder) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -92,17 +94,4 @@ func Register(key string, builder Builder) {
 	}
 
 	builders[key] = builder
-}
-
-// Deprecated.
-type BuildFn func(options interface{}) (Producer, error)
-
-// Deprecated.
-func (c *ConfigSet) Register(key string, builder BuildFn) {
-	panic(i3util.DeprecationError{})
-	//if _, ok := c.builders[key]; ok {
-	//	panic(fmt.Sprintf("Builder %s already exists, cannot reuse keys", key))
-	//}
-
-	//c.builders[key] = builder
 }
