@@ -11,7 +11,7 @@ import (
 type batteryConfig struct {
 	Interval      string `json:"interval"`
 	Name          string `json:"name"`
-	Identifier    string `json:"identifiter"`
+	Identifier    string `json:"identifier"`
 	WarnThreshold int    `json:"warn_threshold"`
 	CritThreshold int    `json:"crit_threshold"`
 }
@@ -30,12 +30,20 @@ func (b batteryBuilder) Build(c config.Config) (i3.Producer, error) {
 		return nil, err
 	}
 
-	if !validateThreshold(conf.WarnThreshold) {
-		return nil, fmt.Errorf("WarnThreshold for %v (%v) is outside acceptable range (0, 100)", conf.WarnThreshold)
+	fmt.Printf("battery: %v\n", conf)
+
+	if ok := validateThreshold(conf.WarnThreshold); !ok {
+		return nil, fmt.Errorf(
+			"WarnThreshold for %v (%v) is outside acceptable range (0, 100)",
+			conf.Identifier, conf.WarnThreshold,
+		)
 	}
 
-	if !validateThreshold(conf.CritThreshold) {
-		return nil, fmt.Errorf("CritThreshold for %v (%v) is outside acceptable range (0, 100)", conf.CritThreshold)
+	if ok := validateThreshold(conf.CritThreshold); !ok {
+		return nil, fmt.Errorf(
+			"CritThreshold for %v (%v) is outside acceptable range (0, 100)",
+			conf.Identifier, conf.CritThreshold,
+		)
 	}
 
 	bat := Battery{
@@ -52,8 +60,8 @@ func (b batteryBuilder) Build(c config.Config) (i3.Producer, error) {
 	}, nil
 }
 
-func validateThreshold(v int) (cond bool) {
-	cond = v < 0 || v > 100
+func validateThreshold(v int) (ok bool) {
+	ok = v > 0 || v < 100
 
 	return
 }

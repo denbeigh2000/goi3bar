@@ -5,8 +5,8 @@
             "name": "memory",
             "options": {
                 "interval": "5s",
-                "warnThreshold": 75,
-                "critThreshold": 85
+                "warn_threshold": 75,
+                "crit_threshold": 85
             }
         },
         {
@@ -16,8 +16,8 @@
                 "interval": "5s",
                 "name": "int bat",
                 "identifier": "BAT0",
-                "warnThreshold": 25,
-                "critThreshold": 15
+                "warn_threshold": 25,
+                "crit_threshold": 15
             }
         },
         {
@@ -27,8 +27,8 @@
                 "interval": "5s",
                 "name": "ext bat",
                 "identifier": "BAT1",
-                "warnThreshold": 25,
-                "critThreshold": 15
+                "warn_threshold": 25,
+                "crit_threshold": 15
             }
         },
         {
@@ -47,17 +47,6 @@
                 "format": "Local: %a %d-%b-%y %I:%M:%S",
                 "color": "#FFFFFF",
                 "location": ""
-            }
-        },
-        {
-            "package": "network",
-            "name": "network",
-            "options": {
-                "interval": "5s",
-                "deviceConfig": {
-                    "name": "eth",
-                    "identifier": "enp0s25"
-                }
             }
         }
     ],
