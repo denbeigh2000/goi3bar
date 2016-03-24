@@ -10,7 +10,7 @@ import (
 
 var (
 	lock     sync.RWMutex
-	builders map[string]Builder
+	builders = make(map[string]Builder, 0)
 )
 
 // Builder is the interface that must be implemented by plugins that wish to be
@@ -89,7 +89,7 @@ func Register(key string, builder Builder) {
 	defer lock.Unlock()
 
 	_, ok := builders[key]
-	if !ok {
+	if ok {
 		panic(fmt.Sprintf("Builder %v already exists", key))
 	}
 
