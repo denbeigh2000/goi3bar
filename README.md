@@ -2,26 +2,29 @@
 
 [![GoDoc](https://godoc.org/github.com/denbeigh2000/goi3bar?status.svg)](http://godoc.org/github.com/denbeigh2000/goi3bar)
 
-This is a concurrent i3status replacement meant for i3bar, written in golang
+Finally, a configurable, lightweight and easily extensible replacement for i3status.
 
-I wrote it because I wanted to take advantage of Go's concurrency support to
-easily do some tasks less frequently - changing the time every second but
-performing an expensive/unimportant operation like, say, checking the weather
-less frequently.
+Why use this over several other alternatives?
+ - **Speed**. This performs better than its' cousins written in interpreted languages
+   (python, php, etc)
+ - **Fine-grained concurrency**. You can assign individual timings to all plugins,
+   allowing you to make expensive calls less frequently (think making a network
+   call to retrieve the weather, vs. updating the time).
+ - **Simple configuration**. goi3bar is driven by JSON configuration, allowing you
+   to easily customise your i3bar. Have you ever tried to use conky?
+ - **Simple Extensibility**. Writing new plugins is much simpler than writing
+   new functionality for a C-based project like conky or i3blocks. There are
+   simple interfaces that let you build your own plugins, and handle JSON
+   configuration. Look in the godoc for Producer, Genreator and Builder.
 
-Some sample configurations are in the `scripts/` directory, run them with `go run
-scripts/scriptname`
-
-I've include some useful interfaces to make making blocks easy, which
-are documented in godoc.
+There is a sample configuration file in `cmd/goi3bar/config.json`, which contains
+configuration for all plugins and all their options.
 
 Talk is cheap! This powers my own i3bar:
 ![i3bar](https://i.imgur.com/B2YBgCZ.png)
 
-In the works:
- - Configuration via JSON (no recompiling)
-
 Currently have:
+ - Configuration via JSON
  - Formattable clock
  - Memory usage (with configurable color thresholds)
  - CPU load averages (with configurable color thresholds)
