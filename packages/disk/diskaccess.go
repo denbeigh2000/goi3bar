@@ -152,8 +152,10 @@ func (g *DiskIOGenerator) Produce(kill <-chan struct{}) <-chan []i3.Output {
 					output[i] = outPart
 				}
 
-				// Add a divider between this and the next one
-				output[len(output)-1].Separator = true
+				if len(output) > 0 {
+					// Add a divider between this and the next one
+					output[len(output)-1].Separator = true
+				}
 
 				out <- output
 			case <-kill:
