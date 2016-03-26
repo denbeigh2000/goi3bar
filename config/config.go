@@ -2,6 +2,7 @@ package config
 
 import (
 	. "github.com/denbeigh2000/goi3bar"
+	"github.com/denbeigh2000/util"
 
 	"fmt"
 	"sync"
@@ -34,7 +35,7 @@ type Config struct {
 // parsed. Call this function with a pointer to your JSON-annotated config
 // struct type in here, and it will behave as you expect it to.
 func (c Config) ParseConfig(i interface{}) error {
-	return jsonReparse(c.Options, i)
+	return util.JSONReparse(c.Options, i)
 }
 
 // ConfigSet represents an entire JSON config file. If all goes well, it
