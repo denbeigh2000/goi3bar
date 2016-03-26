@@ -13,8 +13,8 @@ import (
 type Cpu struct {
 	// If the CPU loads exceeds these thresholds, they will be rendered in the
 	// corresponding state.
-	WarnThreshold float64
-	CritThreshold float64
+	WarnThreshold float64 `json:"warn_threshold"`
+	CritThreshold float64 `json:"crit_threshold"`
 
 	oneLoad     float64
 	fiveLoad    float64
