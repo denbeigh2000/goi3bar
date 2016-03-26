@@ -41,7 +41,7 @@ func getUsage(path string) (info diskUsageInfo, err error) {
 	info.Free = (uint64(stat.Bavail) * uint64(stat.Bsize))
 	info.Total = (uint64(stat.Blocks) * uint64(stat.Bsize))
 
-	info.UsedPerc = int(info.Total-info.Free) / 100
+	info.UsedPerc = int(uint64(info.Total-info.Free) * 100 / uint64(info.Total))
 
 	return
 }
@@ -59,7 +59,8 @@ func (g DiskUsageGenerator) Generate() ([]i3.Output, error) {
 
 		items[i].FullText = fmt.Sprintf(freeFormat, item.Name, free)
 
-		freePercent := int(100 - usage.UsedPerc)
+		freePercent := 100 - int(usage.UsedPerc)
+
 		var color string
 		switch {
 		case freePercent < g.CritThreshold:
