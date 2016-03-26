@@ -2,7 +2,7 @@ package config
 
 import (
 	. "github.com/denbeigh2000/goi3bar"
-	"github.com/denbeigh2000/util"
+	"github.com/denbeigh2000/goi3bar/util"
 
 	"fmt"
 	"sync"

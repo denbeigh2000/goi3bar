@@ -14,15 +14,15 @@ const (
 )
 
 type DiskUsageItem struct {
-	Name string
-	Path string
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 type DiskUsageGenerator struct {
-	CritThreshold int
-	WarnThreshold int
+	CritThreshold int `json:"crit_threshold"`
+	WarnThreshold int `json:"warn_threshold"`
 
-	Items []DiskUsageItem
+	Items []DiskUsageItem `json:"items"`
 }
 
 type diskUsageInfo struct {
