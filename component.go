@@ -58,6 +58,7 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 		// Generate first pack to deliver information fast
 		data, err := p.Generate()
 		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating first packet for %v: %v\n", p.Name, err)
 			return
 		}
 		p.sendOutput(out, data)
