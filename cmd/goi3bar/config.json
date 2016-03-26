@@ -1,79 +1,30 @@
 {
     "entries": [
         {
+            "package": "cpu_load",
+            "name": "cpu_load",
+            "options": {
+                "interval": "5s",
+                "warn_threshold": 0.8,
+                "crit_threshold": 1.0
+            }
+        },
+        {
+            "package": "cpu_util",
+            "name": "cpu_util",
+            "options": {
+                "interval": "5s",
+                "warn_threshold": 0.8,
+                "crit_threshold": 1.0
+            }
+        },
+        {
             "package": "memory",
             "name": "memory",
             "options": {
                 "interval": "5s",
                 "warn_threshold": 75,
                 "crit_threshold": 85
-            }
-        },
-        {
-            "package": "battery",
-            "name": "intBat",
-            "options": {
-                "interval": "5s",
-                "name": "int bat",
-                "identifier": "BAT0",
-                "warn_threshold": 25,
-                "crit_threshold": 15
-            }
-        },
-        {
-            "package": "battery",
-            "name": "extBat",
-            "options": {
-                "interval": "5s",
-                "name": "ext bat",
-                "identifier": "BAT1",
-                "warn_threshold": 25,
-                "crit_threshold": 15
-            }
-        },
-        {
-            "package": "clock",
-            "name": "sydneyTime",
-            "options": {
-                "format": "Sydney: %a %d-%b-%y %I:%M:%S",
-                "color": "#FFFFFF",
-                "location": "Australia/Sydney"
-            }
-        },
-        {
-            "package": "clock",
-            "name": "localTime",
-            "options": {
-                "format": "Local: %a %d-%b-%y %I:%M:%S",
-                "color": "#FFFFFF",
-                "location": ""
-            }
-        },
-        {
-            "package": "network",
-            "name": "network",
-            "options": {
-                "interval": "5s",
-                "config": {
-                    "devices": {
-                        "eth": {
-                            "name": "eth",
-                            "identifier": "enp0s25"
-                        },
-                        "wifi": {
-                            "name": "wifi",
-                            "identifier": "wlp3s0",
-                            "wireless": {
-                                "warn_threshold": 40,
-                                "crit_threshold": 20
-                            }
-                        }
-                    },
-                    "preference": [
-                        "eth",
-                        "wifi"
-                    ]
-                }
             }
         },
         {
@@ -113,21 +64,70 @@
             }
         },
         {
-            "package": "cpu_load",
-            "name": "cpu_load",
+            "package": "battery",
+            "name": "intBat",
             "options": {
                 "interval": "5s",
-                "warn_threshold": 0.8,
-                "crit_threshold": 1.0
+                "name": "int bat",
+                "identifier": "BAT0",
+                "warn_threshold": 25,
+                "crit_threshold": 15
             }
         },
         {
-            "package": "cpu_util",
-            "name": "cpu_util",
+            "package": "battery",
+            "name": "extBat",
             "options": {
                 "interval": "5s",
-                "warn_threshold": 0.8,
-                "crit_threshold": 1.0
+                "name": "ext bat",
+                "identifier": "BAT1",
+                "warn_threshold": 25,
+                "crit_threshold": 15
+            }
+        },
+        {
+            "package": "network",
+            "name": "network",
+            "options": {
+                "interval": "5s",
+                "config": {
+                    "devices": {
+                        "eth": {
+                            "name": "eth",
+                            "identifier": "enp0s25"
+                        },
+                        "wifi": {
+                            "name": "wifi",
+                            "identifier": "wlp3s0",
+                            "wireless": {
+                                "warn_threshold": 40,
+                                "crit_threshold": 20
+                            }
+                        }
+                    },
+                    "preference": [
+                        "eth",
+                        "wifi"
+                    ]
+                }
+            }
+        },
+        {
+            "package": "clock",
+            "name": "sydneyTime",
+            "options": {
+                "format": "Sydney: %a %d-%b-%y %I:%M:%S",
+                "color": "#FFFFFF",
+                "location": "Australia/Sydney"
+            }
+        },
+        {
+            "package": "clock",
+            "name": "localTime",
+            "options": {
+                "format": "Local: %a %d-%b-%y %I:%M:%S",
+                "color": "#FFFFFF",
+                "location": ""
             }
         }
     ],
