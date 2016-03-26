@@ -21,7 +21,7 @@ There is a sample configuration file in `cmd/goi3bar/config.json`, which contain
 configuration for all plugins and all their options.
 
 Talk is cheap! This powers my own i3bar:
-![i3bar](https://i.imgur.com/B2YBgCZ.png)
+![i3bar](http://i.imgur.com/5qwymic.png)
 
 Currently have:
  - Configuration via JSON
