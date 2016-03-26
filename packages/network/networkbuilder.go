@@ -2,130 +2,152 @@ package network
 
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
+	"github.com/denbeigh2000/goi3bar/config"
 
 	"fmt"
 	"time"
 )
 
+// generalConfig represents the outermost configuration layer for any network
+// device. It only has one property: refresh interval, and then can contain
+// arbitrary device configs
+type generalConfig struct {
+	Interval string      `json:"interval"`
+	Config   interface{} `json:"config"`
+}
+
+// Devicer is an interface used within this package to represent a configuration struct
+// that is able to produce a Generator (representing one or more network devices)
+type Devicer interface {
+	Device() (i3.Generator, error)
+}
+
+// basicDeviceConfig represents a JSON configuration for a simple network device
+// (such as ethernet)
 type basicDeviceConfig struct {
-	name       string
-	identifier string
+	Name       string `json:"name"`
+	Identifier string `json:"identifier"`
 }
 
-func (c basicDeviceConfig) toDevice() *BasicNetworkDevice {
+// Device() implements Devicer
+func (c basicDeviceConfig) Device() (i3.Generator, error) {
 	return &BasicNetworkDevice{
-		Name:       c.name,
-		Identifier: c.identifier,
-	}
-}
-
-func (c wirelessDeviceConfig) toDevice() *WLANDevice {
-	return &WLANDevice{
-		BasicNetworkDevice: BasicNetworkDevice{
-			Name:       c.name,
-			Identifier: c.identifier,
-		},
-		WarnThreshold: c.wireless.warnThreshold,
-		CritThreshold: c.wireless.critThreshold,
-	}
-}
-
-type wirelessDeviceConfig struct {
-	name       string
-	identifier string
-	wireless   struct {
-		warnThreshold int
-		critThreshold int
-	}
-}
-
-type multiDeviceConfig struct {
-	devices    map[string]interface{}
-	preference []string
-}
-
-func Build(options interface{}) (i3.Producer, error) {
-	config, ok := options.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("Couldn't decode given config %v", options)
-	}
-
-	intervalInt, ok := config["interval"]
-	if !ok {
-		return nil, fmt.Errorf("Missing interval field")
-	}
-	intervalStr, ok := intervalInt.(string)
-	if !ok {
-		return nil, fmt.Errorf("Couldn't decode interval to string")
-	}
-	interval, err := time.ParseDuration(intervalStr)
-	if err != nil {
-		return nil, err
-	}
-
-	networkOpts, ok := config["deviceConfig"]
-	if !ok {
-		return nil, fmt.Errorf("No device configuration section")
-	}
-
-	var g i3.Generator
-	switch t := networkOpts.(type) {
-	case multiDeviceConfig:
-		g, err = buildMultiDevice(t)
-		if err != nil {
-			return nil, err
-		}
-	case wirelessDeviceConfig:
-		g = t.toDevice()
-	case basicDeviceConfig:
-		g = t.toDevice()
-	default:
-		return nil, fmt.Errorf("Couldn't cast given type %v to a network device config", t)
-	}
-
-	return &i3.BaseProducer{
-		Interval:  interval,
-		Generator: g,
-		Name:      "network",
+		Name:       c.Name,
+		Identifier: c.Identifier,
 	}, nil
 }
 
-func buildNetworkDevice(optRaw interface{}) (NetworkDevice, error) {
-	options, ok := optRaw.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("Invalid options struct given: %v", optRaw)
-	}
-
+// wirelessDeviceConfig represents a JSON configuration for a WLAN device
+type wirelessDeviceConfig struct {
+	Name       string `json:"name"`
+	Identifier string `json: "identifier"`
+	Wireless   struct {
+		WarnThreshold int `json:"warn_threshold"`
+		CritThreshold int `json:"crit_threshold"`
+	} `json:"wireless"`
 }
 
-func buildMultiDevice(options multiDeviceConfig) (i3.Generator, error) {
-	if len(options.devices) != len(options.preference) {
-		return nil, fmt.Errorf("Number of network devices and number of preferences must be equal")
+// Device() implements Devicer
+func (c wirelessDeviceConfig) Device() (i3.Generator, error) {
+	return &WLANDevice{
+		BasicNetworkDevice: BasicNetworkDevice{
+			Name:       c.Name,
+			Identifier: c.Identifier,
+		},
+		WarnThreshold: c.Wireless.WarnThreshold,
+		CritThreshold: c.Wireless.CritThreshold,
+	}, nil
+}
+
+// multiDeviceConfig represents a JSON configuration for a MultiDevice
+type multiDeviceConfig struct {
+	Devices    map[string]interface{} `json:"devices"`
+	Preference []string               `json:"preference"`
+}
+
+// Device() implements Devicer
+func (c multiDeviceConfig) Device() (i3.Generator, error) {
+	if len(c.Devices) != len(c.Preference) {
+		return MultiDevice{}, fmt.Errorf("Number of network devices and number of preferences must be equal")
 	}
 
 	devices := make(map[string]NetworkDevice)
-	for k, v := range options.devices {
-		var d NetworkDevice
-		switch device := v.(type) {
-		case basicDeviceConfig:
-			d = device.toDevice()
-		case wirelessDeviceConfig:
-			d = device.toDevice()
-		case multiDeviceConfig:
-			return nil, fmt.Errorf("Can't have recursive multi device configs")
+	for k, v := range c.Devices {
+		// Prevent erroneous and recursive definitions before expensive operations
+		switch guessJsonType(v) {
+		case "basic", "wireless":
 		default:
-			return nil, fmt.Errorf("Unrecognised device type %v", device)
+			return MultiDevice{}, fmt.Errorf("Can't have recursive multi device configs")
+		}
+
+		// Attempt to determine which network device we are given
+		d, err := buildNetworkConfig(v)
+		if err != nil {
+			return MultiDevice{}, err
 		}
 
 		if _, ok := devices[k]; ok {
-			return nil, fmt.Errorf("Duplicate key %v", k)
+			return MultiDevice{}, fmt.Errorf("Duplicate key %v", k)
 		}
 
-		devices[k] = d
+		// Produce a NetworkDevice and store it in our map
+		generator, err := d.Device()
+		if err != nil {
+			return MultiDevice{}, err
+		}
+
+		switch t := generator.(type) {
+		case *BasicNetworkDevice:
+			devices[k] = t
+		case *WLANDevice:
+			devices[k] = t
+		default:
+			panic("Unsupported NetworkDevice type found while parsing config, second-time reflection. This should never happen")
+		}
 	}
 
 	return MultiDevice{
 		Devices:    devices,
-		Preference: options.preference,
+		Preference: c.Preference,
 	}, nil
+}
+
+// networkBuilder provides the entry point for config to produce a Network plugin
+// from a config file entry
+type networkBuilder struct{}
+
+// Build implements config.Builder
+func (b networkBuilder) Build(data config.Config) (p i3.Producer, err error) {
+	var c generalConfig
+	err = data.ParseConfig(&c)
+	if err != nil {
+		return
+	}
+
+	interval, err := time.ParseDuration(c.Interval)
+	if err != nil {
+		return
+	}
+
+	conf, err := buildNetworkConfig(c.Config)
+	if err != nil {
+		return
+	}
+
+	generator, err := conf.Device()
+	if err != nil {
+		return
+	}
+
+	p = &i3.BaseProducer{
+		Generator: generator,
+		Interval:  interval,
+		Name:      "network",
+	}
+
+	return
+}
+
+func init() {
+	config.Register("network", networkBuilder{})
 }
