@@ -168,8 +168,8 @@ func (g *DiskIOGenerator) Produce(kill <-chan struct{}) <-chan []i3.Output {
 }
 
 type DiskIOItem struct {
-	Name   string
-	Device string
+	Name   string `json:"name"`
+	Device string `json:"device"`
 }
 
 type DiskIOGenerator struct {
