@@ -75,6 +75,27 @@
                     ]
                 }
             }
+        },
+        {
+            "package": "disk_usage",
+            "name": "disk_usage",
+            "options": {
+                "interval": "5s",
+                "options": {
+                    "warn_threshold": 30,
+                    "crit_threshold": 10,
+                    "items": [
+                        {
+                            "name": "root",
+                            "path": "/"
+                        },
+                        {
+                            "name": "home",
+                            "path": "/home"
+                        }
+                    ]
+                }
+            }
         }
     ],
     "interval": "1s"
