@@ -13,7 +13,7 @@ Why use this over several other alternatives?
  - **Simple configuration**. goi3bar is driven by JSON configuration, allowing you
    to easily customise your i3bar. Have you ever tried to use conky?
  - **Simple Extensibility**. Writing new plugins is much simpler than writing
-   new functionality for a C-based project like conky or i3blocks. There are
+   new functionality for a C-based project like conky. There are
    simple interfaces that let you build your own plugins, and handle JSON
    configuration. Look in the godoc for Producer, Genreator and Builder.
 
