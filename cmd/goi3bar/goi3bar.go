@@ -5,7 +5,7 @@ import (
 	_ "github.com/denbeigh2000/goi3bar/packages/battery"
 	_ "github.com/denbeigh2000/goi3bar/packages/clock"
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
-	// "github.com/denbeigh2000/goi3bar/packages/network"
+	_ "github.com/denbeigh2000/goi3bar/packages/network"
 
 	"fmt"
 	"io"

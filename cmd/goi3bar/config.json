@@ -48,6 +48,33 @@
                 "color": "#FFFFFF",
                 "location": ""
             }
+        },
+        {
+            "package": "network",
+            "name": "network",
+            "options": {
+                "interval": "5s",
+                "config": {
+                    "devices": {
+                        "eth": {
+                            "name": "eth",
+                            "identifier": "enp0s25"
+                        },
+                        "wifi": {
+                            "name": "wifi",
+                            "identifier": "wlp3s0",
+                            "wireless": {
+                                "warn_threshold": 40,
+                                "crit_threshold": 20
+                            }
+                        }
+                    },
+                    "preference": [
+                        "eth",
+                        "wifi"
+                    ]
+                }
+            }
         }
     ],
     "interval": "1s"
