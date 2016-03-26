@@ -9,6 +9,7 @@ import (
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
 	_ "github.com/denbeigh2000/goi3bar/packages/network"
 
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -16,16 +17,19 @@ import (
 	"syscall"
 )
 
-// TODO: Flags
-const path = "./config.json"
+var path = flag.String("config-path", "stdin", "Path to the config file to use")
 
 func main() {
+	flag.Parse()
+
 	var inFile io.Reader
-	switch path {
-	case "":
+	switch *path {
+	case "stdin":
 		inFile = os.Stdin
+	case "":
+		panic("Config path explicitly provided as empty, bailing")
 	default:
-		f, err := os.Open(path)
+		f, err := os.Open(*path)
 		if err != nil {
 			panic(fmt.Sprintf("Could not open %v: %v", path, err))
 		}
