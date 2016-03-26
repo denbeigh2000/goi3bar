@@ -31,16 +31,12 @@ func (b diskIOBuilder) Build(c config.Config) (p i3.Producer, err error) {
 		return
 	}
 
-	x := &DiskIOGenerator{
+	return &DiskIOGenerator{
 		WarnThreshold: conf.WarnThreshold,
 		CritThreshold: conf.CritThreshold,
 		Interval:      interval,
 		Items:         conf.Items,
-	}
-
-	fmt.Println(x)
-
-	return x, nil
+	}, nil
 }
 
 func init() {

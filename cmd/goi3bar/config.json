@@ -96,6 +96,21 @@
                     ]
                 }
             }
+        },
+        {
+            "package": "disk_access",
+            "name": "disk_access",
+            "options": {
+                "interval": "5s",
+                "warn_threshold": 3146000,
+                "crit_threshold": 10490000,
+                "items": [
+                    {
+                        "name": "main",
+                        "device": "sda2"
+                    }
+                ]
+            }
         }
     ],
     "interval": "1s"
