@@ -30,8 +30,6 @@ func (b batteryBuilder) Build(c config.Config) (i3.Producer, error) {
 		return nil, err
 	}
 
-	fmt.Printf("battery: %v\n", conf)
-
 	if ok := validateThreshold(conf.WarnThreshold); !ok {
 		return nil, fmt.Errorf(
 			"WarnThreshold for %v (%v) is outside acceptable range (0, 100)",
