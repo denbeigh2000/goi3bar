@@ -40,7 +40,7 @@ func (c basicDeviceConfig) Device() (i3.Generator, error) {
 // wirelessDeviceConfig represents a JSON configuration for a WLAN device
 type wirelessDeviceConfig struct {
 	Name       string `json:"name"`
-	Identifier string `json: "identifier"`
+	Identifier string `json:"identifier"`
 	Wireless   struct {
 		WarnThreshold int `json:"warn_threshold"`
 		CritThreshold int `json:"crit_threshold"`
