@@ -25,8 +25,10 @@ Talk is cheap! This powers my own i3bar:
 
 ### Getting started
 
+**Dependency**: iwconfig for WLAN info. Should be available in `$PATH`
+
 Either generate a binary with `go build`, or run `go install` in the root dir
-and add $GOPATH/bin to your $PATH, then run the `goi3bar` binary:
+and add `$GOPATH/bin` to your `$PATH`, then run the `goi3bar` binary:
 
 From a file:
 ```
@@ -64,7 +66,6 @@ A set of packages come pre-included in the default "goi3bar" binary
 
 #### Sample config
 
-A simple config file, see sample in cmd/goi3bar for detailed example
 This is a very simple config file, there is a sample configuration file in
 `cmd/goi3bar/config.json`, which contains configuration for all plugins and
 all their options.
