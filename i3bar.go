@@ -14,6 +14,20 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
+const (
+	DefaultColorGeneral = "#FFFFFF"
+	DefaultColorOK      = "#00FF00"
+	DefaultColorWarn    = "#FFA500"
+	DefaultColorCrit    = "#00FF00"
+)
+
+var (
+	ColorGeneral = DefaultColorGeneral
+	ColorOK      = DefaultColorOK
+	ColorWarn    = DefaultColorWarn
+	ColorCrit    = DefaultColorCrit
+)
+
 type registerer interface {
 	Register(key string, p Producer)
 }
