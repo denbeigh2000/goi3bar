@@ -19,9 +19,7 @@ import (
 
 var path = flag.String("config-path", "stdin", "Path to the config file to use")
 
-func main() {
-	flag.Parse()
-
+func loadConfigSet() (config.ConfigSet, error) {
 	var inFile io.Reader
 	switch *path {
 	case "stdin":
@@ -31,21 +29,22 @@ func main() {
 	default:
 		f, err := os.Open(*path)
 		if err != nil {
-			panic(fmt.Sprintf("Could not open %v: %v", path, err))
+			return config.ConfigSet{}, fmt.Errorf("Could not open %v: %v", path, err)
 		}
+		defer f.Close()
 
 		inFile = f
 	}
 
-	cs, err := config.ReadConfigSet(inFile)
+	return config.ReadConfigSet(inFile)
+}
+
+func main() {
+	flag.Parse()
+
+	cs, err := loadConfigSet()
 	if err != nil {
 		panic(err)
-	}
-
-	// Not closing this using defer because otherwise the file stays open until
-	// the program is terminated.
-	if f, ok := inFile.(*os.File); ok {
-		f.Close()
 	}
 
 	bar, err := cs.Build()
