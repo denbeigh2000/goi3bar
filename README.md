@@ -18,7 +18,9 @@ Why use this over several other alternatives?
    configuration. Look in the godoc for Producer, Genreator and Builder.
 
 Talk is cheap! This powers my own i3bar:
-![i3bar](http://i.imgur.com/5qwymic.png)
+![i3bar1](http://i.imgur.com/3zHCdjv.png)
+![i3bar2](http://i.imgur.com/HOTvNyp.png)
+![i3bar3](http://i.imgur.com/SnHTnkA.png)
 
 ### Getting started
 
