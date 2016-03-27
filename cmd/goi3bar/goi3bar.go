@@ -33,7 +33,6 @@ func main() {
 		if err != nil {
 			panic(fmt.Sprintf("Could not open %v: %v", path, err))
 		}
-		defer f.Close()
 
 		inFile = f
 	}
@@ -41,6 +40,12 @@ func main() {
 	cs, err := config.ReadConfigSet(inFile)
 	if err != nil {
 		panic(err)
+	}
+
+	// Not closing this using defer because otherwise the file stays open until
+	// the program is terminated.
+	if f, ok := inFile.(*os.File); ok {
+		f.Close()
 	}
 
 	bar, err := cs.Build()
