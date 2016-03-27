@@ -14,7 +14,7 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
-type Registerer interface {
+type registerer interface {
 	Register(key string, p Producer)
 }
 
@@ -160,7 +160,7 @@ func (i *I3bar) Order(keys []string) error {
 // collect is a helper function which retrieves the current Outputs from the
 // i3bar.
 func (i *I3bar) collect() []Output {
-	items := make([]Output, 0)
+	var items []Output
 
 	for _, k := range i.order {
 		v, ok := i.values[k]

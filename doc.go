@@ -1,7 +1,7 @@
 // Copyright 2015-2016 Denbeigh Stevens
 
 /*
-goi3bar is a package that is capable of generating output suitable for i3bar.
+Package goi3bar is a package that is capable of generating output suitable for i3bar.
 i3bar output is created by outputting JSON, which is defined in the i3bar
 documentation, found at http://i3wm.org/docs/i3bar-protocol.html
 

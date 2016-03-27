@@ -19,7 +19,7 @@ func NewMultiGenerator(g []Generator) MultiGenerator {
 
 // Generate implements Generator
 func (m MultiGenerator) Generate() ([]Output, error) {
-	out := make([]Output, 0)
+	var out []Output
 
 	for _, g := range m.generators {
 		output, err := g.Generate()

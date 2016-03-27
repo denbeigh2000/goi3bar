@@ -35,9 +35,9 @@ func (m MultiProducer) Produce(kill <-chan struct{}) <-chan []Output {
 	return out
 }
 
-// MultiRegister takes a Registerer and uses it to register all of its'
+// MultiRegister takes a registerer and uses it to register all of its'
 // Producers
-func (m MultiProducer) MultiRegister(r Registerer) {
+func (m MultiProducer) MultiRegister(r registerer) {
 	for k, p := range m.producers {
 		r.Register(k, p)
 	}
