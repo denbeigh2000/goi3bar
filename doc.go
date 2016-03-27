@@ -9,7 +9,7 @@ How to put data on the bar
 
 A single i3bar output struct is represented as an Output. Any applet wanting
 to display information on the bar must create output of type []Output. The two
-interfaces that produce []Ouput are Producer and Generator.
+interfaces that produce []Output are Producer and Generator.
 
 Registering new plugins
 

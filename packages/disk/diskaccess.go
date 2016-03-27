@@ -67,7 +67,7 @@ func generateIO(kill <-chan struct{}, interval time.Duration,
 				}
 
 				for _, d := range devices {
-					// Retreive the IO stats of this device
+					// Retrieve the IO stats of this device
 					usage, ok := stats[d]
 					if !ok {
 						errCh <- fmt.Errorf("No device found: %v", d)
