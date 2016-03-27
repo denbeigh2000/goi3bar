@@ -61,7 +61,7 @@ func (m MultiDevice) Generate() ([]i3.Output, error) {
 		}
 	}
 
-	return []i3.Output{i3.Output{
+	return []i3.Output{{
 		FullText:  "No devices connected",
 		Color:     "#FF0000",
 		Separator: true,

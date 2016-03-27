@@ -101,7 +101,7 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 	d.Update()
 
 	if !d.connected {
-		return []i3.Output{i3.Output{
+		return []i3.Output{{
 			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
 			Color:    "#FF0000",
 		}}, nil
@@ -118,7 +118,7 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 
 	text := fmt.Sprintf(ethFormat, ip, speed)
 
-	return []i3.Output{i3.Output{
+	return []i3.Output{{
 		FullText:  text,
 		Color:     "#00FF00",
 		Separator: true,

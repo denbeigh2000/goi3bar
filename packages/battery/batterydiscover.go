@@ -11,7 +11,7 @@ import (
 var (
 	// Lowercase map of power supply identifiers we don't want to include
 	prohibitedItems = map[string]struct{}{
-		"ac": struct{}{},
+		"ac": {},
 	}
 )
 
@@ -49,7 +49,7 @@ func BatteryDiscover(names map[string]string, WarnThreshold, CritThreshold int) 
 	// Show a useful message if no batteries were found
 	if len(interfaces) == 0 {
 		return i3.StaticGenerator(
-			[]i3.Output{i3.Output{
+			[]i3.Output{{
 				FullText:  "No battery found",
 				Separator: true,
 				Color:     "#FF0000",

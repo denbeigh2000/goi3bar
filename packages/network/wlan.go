@@ -101,7 +101,7 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 	}
 
 	if !d.connected {
-		return []i3.Output{i3.Output{
+		return []i3.Output{{
 			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
 			Color:    "#FF0000",
 		}}, nil
