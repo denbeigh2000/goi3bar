@@ -45,9 +45,19 @@ func generateIO(kill <-chan struct{}, interval time.Duration,
 		// Keeps a record of our last checked IO count, so we can calculate our delta
 		prev := make(map[string]uint64, len(devices))
 
+		cheat := make(chan time.Time)
+		go func() {
+			defer close(cheat)
+
+			cheat <- time.Time{}
+			for t := range tick.C {
+				cheat <- t
+			}
+		}()
+
 		for {
 			select {
-			case <-tick.C:
+			case <-cheat:
 				send := make(map[string]float64, len(devices))
 
 				stats, err := currentIOStatus(devices...)
