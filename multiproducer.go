@@ -18,13 +18,13 @@ func (m MultiProducer) Produce(kill <-chan struct{}) <-chan []Output {
 	wg := sync.WaitGroup{}
 	for _, p := range m.producers {
 		wg.Add(1)
-		go func() {
+		go func(p Producer) {
 			defer wg.Done()
 			ch := p.Produce(kill)
 			for x := range ch {
 				out <- x
 			}
-		}()
+		}(p)
 	}
 
 	go func() {
