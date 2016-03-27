@@ -17,11 +17,25 @@ Why use this over several other alternatives?
    simple interfaces that let you build your own plugins, and handle JSON
    configuration. Look in the godoc for Producer, Genreator and Builder.
 
-There is a sample configuration file in `cmd/goi3bar/config.json`, which contains
-configuration for all plugins and all their options.
-
 Talk is cheap! This powers my own i3bar:
 ![i3bar](http://i.imgur.com/5qwymic.png)
+
+### Getting started
+
+Either generate a binary with `go build`, or run `go install` in the root dir
+and add $GOPATH/bin to your $PATH, then run the `goi3bar` binary:
+
+From a file:
+```
+goi3bar --config-path /home/denbeigh/.i3/config.json
+```
+
+or through stdin:
+```
+cat /home/denbeigh/.i3/config.json | goi3bar
+```
+
+Set either of these as your `status_command` field in `~/.i3/config`
 
 ### Basic configuration
 
@@ -45,7 +59,13 @@ A set of packages come pre-included in the default "goi3bar" binary
 | network | Information about currently connected networks |
 | clock | Current time |
 
+#### Sample config
+
 A simple config file, see sample in cmd/goi3bar for detailed example
+This is a very simple config file, there is a sample configuration file in
+`cmd/goi3bar/config.json`, which contains configuration for all plugins and
+all their options.
+
 
 ```
 {
