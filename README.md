@@ -23,6 +23,48 @@ configuration for all plugins and all their options.
 Talk is cheap! This powers my own i3bar:
 ![i3bar](http://i.imgur.com/5qwymic.png)
 
+### Basic configuration
+
+A configuration file is represented with JSON, consisting of refresh interval
+and zero or more entries
+
+Each entry has a "package" referring to the plugin it uses, a "name" (anything,
+but must be unique) and an "options" struct, which will be dependent on the
+package you are using.
+
+A set of packages come pre-included in the default "goi3bar" binary
+
+| Package key | Function |
+| --- | --- |
+| cpu_load | 1, 5, 15 minute CPU loads |
+| cpu_util | Current CPU percentage utilisation |
+| memory | Current memory usage |
+| disk_usage | Current free disk space |
+| disk_access | Current data I/O rate |
+| battery | Current battery level/remaining time |
+| network | Information about currently connected networks |
+| clock | Current time |
+
+A simple config file, see sample in cmd/goi3bar for detailed example
+
+```
+{
+    "interval": "5s",
+    "entries": [
+        {
+            "package": "memory",
+            "name": "memory",
+            "options": {
+                "interval": "10s",
+                "warn_threshold": 75,
+                "crit_threshold": 85
+            }
+        }
+    ]
+```
+
+### TODO
+
 Currently have:
  - Configuration via JSON
  - Formattable clock
