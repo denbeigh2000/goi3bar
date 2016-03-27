@@ -30,12 +30,12 @@ and add $GOPATH/bin to your $PATH, then run the `goi3bar` binary:
 
 From a file:
 ```
-goi3bar --config-path /home/denbeigh/.i3/config.json
+goi3bar --config-path ~/.i3/config.json
 ```
 
 or through stdin:
 ```
-cat /home/denbeigh/.i3/config.json | goi3bar
+cat ~/.i3/config.json | goi3bar
 ```
 
 Set either of these as your `status_command` field in `~/.i3/config`
