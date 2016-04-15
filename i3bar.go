@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"time"
 )
 
@@ -21,11 +22,19 @@ const (
 	DefaultColorCrit    = "#FF0000"
 )
 
+var ColorRegexp = regexp.MustCompile("#[0-9A-Fa-f]{6}")
+
 var DefaultColors = Colors{
 	General: DefaultColorGeneral,
 	OK:      DefaultColorOK,
 	Warn:    DefaultColorWarn,
 	Crit:    DefaultColorCrit,
+}
+
+type InvalidColorErr string
+
+func (i InvalidColorErr) Error() string {
+	return fmt.Sprintf("Invalid color %v, must be of the form #09abCF", i)
 }
 
 type registerer interface {
@@ -52,22 +61,36 @@ type Colors struct {
 	Crit    string `json:"color_crit"`
 }
 
-func (c *Colors) Update(other Colors) {
+func (c *Colors) Update(other Colors) error {
 	if other.General != "" {
+		if !ColorRegexp.MatchString(other.General) {
+			return InvalidColorErr(other.General)
+		}
 		c.General = other.General
 	}
 
 	if other.OK != "" {
+		if !ColorRegexp.MatchString(other.OK) {
+			return InvalidColorErr(other.OK)
+		}
 		c.OK = other.OK
 	}
 
 	if other.Warn != "" {
+		if !ColorRegexp.MatchString(other.Warn) {
+			return InvalidColorErr(other.Warn)
+		}
 		c.Warn = other.Warn
 	}
 
 	if other.Crit != "" {
+		if !ColorRegexp.MatchString(other.Crit) {
+			return InvalidColorErr(other.Crit)
+		}
 		c.Crit = other.Crit
 	}
+
+	return nil
 }
 
 // output is a helper function that sends the initial data to i3bar, and then
