@@ -103,7 +103,7 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 	if !d.connected {
 		return []i3.Output{{
 			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
-			Color:    "#FF0000",
+			Color:    i3.DefaultColors.Crit,
 		}}, nil
 	}
 
@@ -120,7 +120,7 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 
 	return []i3.Output{{
 		FullText:  text,
-		Color:     "#00FF00",
+		Color:     i3.DefaultColors.OK,
 		Separator: true,
 	}}, nil
 }

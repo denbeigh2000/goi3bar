@@ -50,11 +50,11 @@ func (c CpuPerc) format(p float64) []i3.Output {
 	var color string
 	switch {
 	case p >= c.CritThreshold:
-		color = "#FF0000"
+		color = i3.DefaultColors.Crit
 	case p >= c.WarnThreshold:
-		color = "#FFA500"
+		color = i3.DefaultColors.Warn
 	default:
-		color = "#00FF00"
+		color = i3.DefaultColors.OK
 	}
 
 	return []i3.Output{{

@@ -34,7 +34,7 @@ func (c Clock) Generate() ([]i3.Output, error) {
 
 	color := c.Color
 	if color == "" {
-		color = "#FFFFFF"
+		color = i3.DefaultColors.General
 	}
 
 	o := i3.Output{

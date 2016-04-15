@@ -103,7 +103,7 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 	if !d.connected {
 		return []i3.Output{{
 			FullText: fmt.Sprintf(notConnectedTpl, d.Name),
-			Color:    "#FF0000",
+			Color:    i3.DefaultColors.Crit,
 		}}, nil
 	}
 
@@ -120,11 +120,11 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 	var color string
 	switch {
 	case d.strength < d.CritThreshold:
-		color = "#FF0000"
+		color = i3.DefaultColors.Crit
 	case d.strength < d.WarnThreshold:
-		color = "#FFA500"
+		color = i3.DefaultColors.Warn
 	default:
-		color = "#00FF00"
+		color = i3.DefaultColors.OK
 	}
 
 	out := i3.Output{
