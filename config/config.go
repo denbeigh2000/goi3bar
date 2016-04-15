@@ -43,12 +43,7 @@ func (c Config) ParseConfig(i interface{}) error {
 type ConfigSet struct {
 	Entries  []Config `json:"entries"`
 	Interval string   `json:"interval"`
-	Colors   struct {
-		ColorGeneral string `json:"color_general"`
-		ColorOK      string `json:"color_ok"`
-		ColorWarn    string `json:"color_warn"`
-		ColorCrit    string `json:"color_crit"`
-	} `json:"colors"`
+	Colors   Colors   `json:"colors"`
 }
 
 // Build() constructs an I3bar from its internal configuration. The returned
@@ -83,6 +78,7 @@ func (c ConfigSet) Build() (bar *I3bar, err error) {
 		bar.Register(e.Name, producer)
 	}
 
+	DefaultColors.Update(c.Colors)
 	bar.Order(keys)
 
 	return

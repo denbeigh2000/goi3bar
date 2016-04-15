@@ -21,12 +21,12 @@ const (
 	DefaultColorCrit    = "#00FF00"
 )
 
-var (
-	ColorGeneral = DefaultColorGeneral
-	ColorOK      = DefaultColorOK
-	ColorWarn    = DefaultColorWarn
-	ColorCrit    = DefaultColorCrit
-)
+var DefaultColors = Colors{
+	ColorGeneral: DefaultColorGeneral,
+	ColorOK:      DefaultColorOK,
+	ColorWarn:    DefaultColorWarn,
+	ColorCrit:    DefaultColorCrit,
+}
 
 type registerer interface {
 	Register(key string, p Producer)
@@ -43,6 +43,31 @@ type Output struct {
 	ShortText string `json:"short_text,omitempty"`
 	Separator bool   `json:"separator"`
 	Urgent    bool   `json:"urgent"`
+}
+
+type Colors struct {
+	ColorGeneral string `json:"color_general"`
+	ColorOK      string `json:"color_ok"`
+	ColorWarn    string `json:"color_warn"`
+	ColorCrit    string `json:"color_crit"`
+}
+
+func (c *Colors) Update(other Colors) {
+	if other.ColorGeneral != "" {
+		c.ColorGeneral = other.ColorGeneral
+	}
+
+	if other.ColorOK != "" {
+		c.ColorOK = other.ColorOK
+	}
+
+	if other.ColorWarn != "" {
+		c.ColorWarn = other.ColorWarn
+	}
+
+	if other.ColorCrit != "" {
+		c.ColorCrit = other.ColorCrit
+	}
 }
 
 // output is a helper function that sends the initial data to i3bar, and then
