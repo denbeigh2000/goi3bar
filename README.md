@@ -73,6 +73,12 @@ all their options.
 
 ```
 {
+    "colors": {
+        "color_crit": "#FF0000",
+        "color_warn": "#FFA500",
+        "color_ok": "#00FF00",
+        "color_general": "#FFFFFF"
+    },
     "interval": "5s",
     "entries": [
         {
