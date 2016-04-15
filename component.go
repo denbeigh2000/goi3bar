@@ -39,10 +39,11 @@ func (g StaticGenerator) Generate() ([]Output, error) {
 
 // sendOutput is a helper function that waits up to p.Interval to send the
 // given data down the given output channel, and abandons if it cannot.
-func (p BaseProducer) sendOutput(out chan<- []Output, data []Output) {
+func (p BaseProducer) sendOutput(out chan<- []Output, data []Output, kill <-chan struct{}) {
 	select {
 	case out <- data:
 	case <-time.After(p.Interval):
+	case <-kill:
 	}
 }
 
@@ -61,7 +62,7 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 			fmt.Fprintf(os.Stderr, "Error generating first packet for %v: %v\n", p.Name, err)
 			return
 		}
-		p.sendOutput(out, data)
+		p.sendOutput(out, data, kill)
 
 		for {
 			select {
@@ -73,7 +74,10 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 				}
 
 				// Attempt to send the output
-				p.sendOutput(out, data)
+				p.sendOutput(out, data, kill)
+
+			case <-kill:
+				return
 			}
 		}
 	}()

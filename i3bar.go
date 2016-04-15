@@ -190,6 +190,7 @@ func (i *I3bar) Start() {
 // Kill kills the i3bar (and all resgistered Producers)
 func (i I3bar) Kill() {
 	close(i.kill)
+	close(i.in)
 }
 
 // Register registers a new Producer with the I3bar. The I3bar expects incoming
