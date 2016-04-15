@@ -112,11 +112,11 @@ func (g *DiskIOGenerator) createOutput(i DiskIOItem, v float64) i3.Output {
 	var color string
 	switch {
 	case v > g.CritThreshold:
-		color = "#FF0000"
+		color = i3.DefaultColors.Crit
 	case v > g.WarnThreshold:
-		color = "#FF1A00"
+		color = i3.DefaultColors.Warn
 	default:
-		color = "#00FF00"
+		color = i3.DefaultColors.OK
 	}
 
 	return i3.Output{

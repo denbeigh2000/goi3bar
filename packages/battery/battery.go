@@ -107,7 +107,7 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 
 	if !b.present {
 		o.FullText = fmt.Sprintf("Battery %v not present", b.Identifier)
-		o.Color = "#FF0000"
+		o.Color = i3.DefaultColors.Crit
 		return
 	}
 
@@ -122,11 +122,11 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 	text := fmt.Sprintf("%v %v %v%% %v", b.Name, b.status, b.level, remain)
 	switch {
 	case b.Crit():
-		o.Color = "#FF0000"
+		o.Color = i3.DefaultColors.Crit
 	case b.Warn():
-		o.Color = "#FFA500"
+		o.Color = i3.DefaultColors.Warn
 	default:
-		o.Color = "#00FF00"
+		o.Color = i3.DefaultColors.OK
 	}
 
 	o.FullText = text

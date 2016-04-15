@@ -46,11 +46,11 @@ func (c *Cpu) Generate() ([]i3.Output, error) {
 		var color string
 		switch {
 		case l >= c.CritThreshold:
-			color = "#FF0000"
+			color = i3.DefaultColors.Crit
 		case l >= c.WarnThreshold:
-			color = "#FFA500"
+			color = i3.DefaultColors.Warn
 		default:
-			color = "#00FF00"
+			color = i3.DefaultColors.OK
 		}
 
 		outputs[i] = i3.Output{

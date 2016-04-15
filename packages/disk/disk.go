@@ -64,11 +64,11 @@ func (g DiskUsageGenerator) Generate() ([]i3.Output, error) {
 		var color string
 		switch {
 		case freePercent < g.CritThreshold:
-			color = "#FF0000"
+			color = i3.DefaultColors.Crit
 		case freePercent < g.WarnThreshold:
-			color = "#FFA500"
+			color = i3.DefaultColors.Warn
 		default:
-			color = "#00FF00"
+			color = i3.DefaultColors.OK
 		}
 
 		items[i].Color = color
