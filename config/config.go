@@ -78,7 +78,10 @@ func (c ConfigSet) Build() (bar *I3bar, err error) {
 		bar.Register(e.Name, producer)
 	}
 
-	DefaultColors.Update(c.Colors)
+	err = DefaultColors.Update(c.Colors)
+	if err != nil {
+		return
+	}
 	bar.Order(keys)
 
 	return
