@@ -34,7 +34,7 @@ var DefaultColors = Colors{
 type InvalidColorErr string
 
 func (i InvalidColorErr) Error() string {
-	return fmt.Sprintf("Invalid color %v, must be of the form #09abCF", i)
+	return fmt.Sprintf("Invalid color %v, must be of the form #09abCF", string(i))
 }
 
 type registerer interface {
