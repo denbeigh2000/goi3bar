@@ -18,14 +18,14 @@ const (
 	DefaultColorGeneral = "#FFFFFF"
 	DefaultColorOK      = "#00FF00"
 	DefaultColorWarn    = "#FFA500"
-	DefaultColorCrit    = "#00FF00"
+	DefaultColorCrit    = "#FF0000"
 )
 
 var DefaultColors = Colors{
-	ColorGeneral: DefaultColorGeneral,
-	ColorOK:      DefaultColorOK,
-	ColorWarn:    DefaultColorWarn,
-	ColorCrit:    DefaultColorCrit,
+	General: DefaultColorGeneral,
+	OK:      DefaultColorOK,
+	Warn:    DefaultColorWarn,
+	Crit:    DefaultColorCrit,
 }
 
 type registerer interface {
@@ -46,27 +46,27 @@ type Output struct {
 }
 
 type Colors struct {
-	ColorGeneral string `json:"color_general"`
-	ColorOK      string `json:"color_ok"`
-	ColorWarn    string `json:"color_warn"`
-	ColorCrit    string `json:"color_crit"`
+	General string `json:"color_general"`
+	OK      string `json:"color_ok"`
+	Warn    string `json:"color_warn"`
+	Crit    string `json:"color_crit"`
 }
 
 func (c *Colors) Update(other Colors) {
-	if other.ColorGeneral != "" {
-		c.ColorGeneral = other.ColorGeneral
+	if other.General != "" {
+		c.General = other.General
 	}
 
-	if other.ColorOK != "" {
-		c.ColorOK = other.ColorOK
+	if other.OK != "" {
+		c.OK = other.OK
 	}
 
-	if other.ColorWarn != "" {
-		c.ColorWarn = other.ColorWarn
+	if other.Warn != "" {
+		c.Warn = other.Warn
 	}
 
-	if other.ColorCrit != "" {
-		c.ColorCrit = other.ColorCrit
+	if other.Crit != "" {
+		c.Crit = other.Crit
 	}
 }
 
