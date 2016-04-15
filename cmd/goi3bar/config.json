@@ -131,5 +131,11 @@
             }
         }
     ],
-    "interval": "1s"
+    "interval": "1s",
+    "colors": {
+        "color_crit": "#FF0000",
+        "color_warn": "#FFA500",
+        "color_ok": "#00FF00",
+        "color_general": "#FFFFFF"
+    }
 }
