@@ -170,6 +170,20 @@ func NewI3bar(update time.Duration) *I3bar {
 
 // Start starts the i3bar (and all registered Producers)
 func (i *I3bar) Start() {
+	var o <-chan []Output
+	for k, p := range i.producers {
+		o = p.Produce(i.kill)
+
+		go func(key string, out <-chan []Output) {
+			for x := range out {
+				i.in <- Update{
+					Key: key,
+					Out: x,
+				}
+			}
+		}(k, o)
+	}
+
 	go i.loop()
 }
 
@@ -189,16 +203,6 @@ func (i *I3bar) Register(key string, p Producer) {
 	i.producers[key] = p
 	i.values[key] = nil
 	i.order = append(i.order, key)
-
-	out := p.Produce(i.kill)
-	go func() {
-		for x := range out {
-			i.in <- Update{
-				Key: key,
-				Out: x,
-			}
-		}
-	}()
 }
 
 // Order determines the order in which items appear on the i3bar. The given
