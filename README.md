@@ -28,23 +28,17 @@ Talk is cheap! This powers my own i3bar:
 **Dependency**: iwconfig for WLAN info. Should be available in `$PATH`
 
 Either generate a binary with `go build`, or run `go install` in the root dir
-and add `$GOPATH/bin` to your `$PATH`, then run the `goi3bar` binary:
-
-From a file:
+and add `$GOPATH/bin` to your `$PATH`, then run the `goi3bar` binary with your
+config file path:
 ```
-goi3bar --config-path ~/.i3/config.json
-```
-
-or through stdin:
-```
-cat ~/.i3/config.json | goi3bar
+goi3bar --config-path $HOME/.i3/config.json
 ```
 **NB**: While input through stdin is supported in this version, it will be
 removed in a future revision - I am working on support for click events in a
 feature branch (it's almost ready - check it out!) which needs to read from
 stdin, and we can't read from stdin after reading EOF.
 
-Set either of these as your `status_command` field in `~/.i3/config`
+Set this as the `status_command` field in `~/.i3/config`.
 
 ### Basic configuration
 
