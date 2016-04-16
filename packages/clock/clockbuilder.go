@@ -18,7 +18,13 @@ func (b clockBuilder) Build(conf config.Config) (i3.Producer, error) {
 		return nil, err
 	}
 
-	c.Name = Identifier
+	switch conf.Name {
+	case "":
+		c.Name = Identifier
+	default:
+		c.Name = conf.Name
+	}
+
 	switch c.Location {
 	case "":
 		c.Instance = "Local"
