@@ -10,6 +10,8 @@ import (
 	"strconv"
 )
 
+const Identifier = "network"
+
 const (
 	notConnected = "Not connected"
 	ethFormat    = "Connected: %v (%vMb/s)"
@@ -119,6 +121,8 @@ func (d *BasicNetworkDevice) Generate() ([]i3.Output, error) {
 	text := fmt.Sprintf(ethFormat, ip, speed)
 
 	return []i3.Output{{
+		Name:      Identifier,
+		Instance:  d.Identifier,
 		FullText:  text,
 		Color:     i3.DefaultColors.OK,
 		Separator: true,

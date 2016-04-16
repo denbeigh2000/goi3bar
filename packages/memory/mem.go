@@ -10,6 +10,7 @@ import (
 )
 
 type Memory struct {
+	Name          string
 	WarnThreshold int
 	CritThreshold int
 }
@@ -62,6 +63,7 @@ func (m Memory) Generate() ([]i3.Output, error) {
 
 	out := make([]i3.Output, 1)
 	out[0] = i3.Output{
+		Name:      m.Name,
 		FullText:  fmt.Sprintf(FormatString, percUsed, bytefmt.ByteSize(used), bytefmt.ByteSize(total)),
 		Color:     color,
 		Separator: true,

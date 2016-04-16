@@ -31,6 +31,7 @@ func (b cpuBuilder) Build(c config.Config) (p i3.Producer, err error) {
 
 	if b.perc {
 		p = &CpuPerc{
+			Name:          "cpu_util",
 			WarnThreshold: conf.WarnThreshold,
 			CritThreshold: conf.CritThreshold,
 			Interval:      interval,
@@ -38,6 +39,7 @@ func (b cpuBuilder) Build(c config.Config) (p i3.Producer, err error) {
 	} else {
 		p = &i3.BaseProducer{
 			Generator: &Cpu{
+				Name:          "cpu_load",
 				WarnThreshold: conf.WarnThreshold,
 				CritThreshold: conf.CritThreshold,
 			},

@@ -62,6 +62,7 @@ func (m MultiDevice) Generate() ([]i3.Output, error) {
 	}
 
 	return []i3.Output{{
+		Name:      Identifier,
 		FullText:  "No devices connected",
 		Color:     i3.DefaultColors.Crit,
 		Separator: true,

@@ -99,7 +99,12 @@ func (b *Battery) Generate() (out []i3.Output, err error) {
 		return
 	}
 
-	o := i3.Output{Separator: true}
+	o := i3.Output{
+		Name:      b.Name,
+		Instance:  b.Identifier,
+		Separator: true,
+	}
+
 	out = make([]i3.Output, 1)
 	defer func() {
 		out[0] = o

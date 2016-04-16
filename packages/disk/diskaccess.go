@@ -8,6 +8,7 @@ import (
 
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -159,6 +160,8 @@ func (g *DiskIOGenerator) Produce(kill <-chan struct{}) <-chan []i3.Output {
 				for i, item := range g.Items {
 					val := items[item.Device]
 					outPart := g.createOutput(item, val)
+					outPart.Name = g.Name
+					outPart.Instance = strconv.Itoa(i)
 					output[i] = outPart
 				}
 
@@ -185,6 +188,8 @@ type DiskIOItem struct {
 type DiskIOGenerator struct {
 	WarnThreshold float64
 	CritThreshold float64
+
+	Name string
 
 	Interval time.Duration
 

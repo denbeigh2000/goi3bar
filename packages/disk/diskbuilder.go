@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const Identifier = "disk_usage"
+
 type diskUsageConfig struct {
 	Interval string             `json:"interval"`
 	Options  DiskUsageGenerator `json:"options"`
@@ -26,6 +28,8 @@ func (b diskUsageBuilder) Build(c config.Config) (p i3.Producer, err error) {
 		return
 	}
 
+	conf.Options.Name = Identifier
+
 	return &i3.BaseProducer{
 		Generator: conf.Options,
 		Interval:  interval,
@@ -34,5 +38,5 @@ func (b diskUsageBuilder) Build(c config.Config) (p i3.Producer, err error) {
 }
 
 func init() {
-	config.Register("disk_usage", diskUsageBuilder{})
+	config.Register(Identifier, diskUsageBuilder{})
 }

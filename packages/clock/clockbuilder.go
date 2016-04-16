@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const Identifier = "clock"
+
 type clockBuilder struct{}
 
 func (b clockBuilder) Build(conf config.Config) (i3.Producer, error) {
@@ -14,6 +16,14 @@ func (b clockBuilder) Build(conf config.Config) (i3.Producer, error) {
 	err := conf.ParseConfig(&c)
 	if err != nil {
 		return nil, err
+	}
+
+	c.Name = Identifier
+	switch c.Location {
+	case "":
+		c.Instance = "Local"
+	default:
+		c.Instance = c.Location
 	}
 
 	return &i3.BaseProducer{
@@ -24,5 +34,5 @@ func (b clockBuilder) Build(conf config.Config) (i3.Producer, error) {
 }
 
 func init() {
-	config.Register("clock", clockBuilder{})
+	config.Register(Identifier, clockBuilder{})
 }

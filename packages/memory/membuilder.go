@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const Identifier = "memory"
+
 // MemoryConfig represents the configuration for a Memory plugin in
 // JSON format
 type MemoryConfig struct {
@@ -29,13 +31,19 @@ func (m memoryBuilder) Build(c config.Config) (Producer, error) {
 		return nil, err
 	}
 
+	g := Memory{
+		Name:          Identifier,
+		WarnThreshold: conf.WarnThreshold,
+		CritThreshold: conf.CritThreshold,
+	}
+
 	return &BaseProducer{
-		Generator: Memory{},
-		Name:      "memory",
+		Generator: g,
+		Name:      Identifier,
 		Interval:  interval,
 	}, nil
 }
 
 func init() {
-	config.Register("memory", memoryBuilder{})
+	config.Register(Identifier, memoryBuilder{})
 }

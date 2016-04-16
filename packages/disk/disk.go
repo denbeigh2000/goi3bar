@@ -23,6 +23,9 @@ type DiskUsageGenerator struct {
 	WarnThreshold int `json:"warn_threshold"`
 
 	Items []DiskUsageItem `json:"items"`
+
+	// Identifier for receiving click events
+	Name string
 }
 
 type diskUsageInfo struct {
@@ -72,6 +75,9 @@ func (g DiskUsageGenerator) Generate() ([]i3.Output, error) {
 		}
 
 		items[i].Color = color
+
+		items[i].Name = g.Name
+		items[i].Instance = item.Path
 	}
 
 	items[len(items)-1].Separator = true

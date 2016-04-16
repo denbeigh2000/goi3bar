@@ -11,6 +11,7 @@ import (
 // Cpu is a small CPU load monitor. It scrapes /proc/loadavg to display your
 // average # waiting threads over 1, 5 and 15 minute averages.
 type Cpu struct {
+	Name string
 	// If the CPU loads exceeds these thresholds, they will be rendered in the
 	// corresponding state.
 	WarnThreshold float64 `json:"warn_threshold"`
@@ -53,7 +54,19 @@ func (c *Cpu) Generate() ([]i3.Output, error) {
 			color = i3.DefaultColors.OK
 		}
 
+		var instance string
+		switch i {
+		case 0:
+			instance = "1"
+		case 1:
+			instance = "5"
+		case 2:
+			instance = "15"
+		}
+
 		outputs[i] = i3.Output{
+			Name:      c.Name,
+			Instance:  instance,
 			FullText:  strconv.FormatFloat(l, 'f', 2, 64),
 			Color:     color,
 			Separator: i == expMatches-1,

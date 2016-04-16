@@ -128,6 +128,8 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 	}
 
 	out := i3.Output{
+		Name:      Identifier,
+		Instance:  d.Identifier,
 		FullText:  txt,
 		Color:     color,
 		Separator: true,

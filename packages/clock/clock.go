@@ -16,6 +16,10 @@ type Clock struct {
 	// The IANA Timezone database zone name to show the time for
 	Location string `json:"location"`
 	Color    string `json:"color"`
+
+	// Details to identify clock for events
+	Name     string
+	Instance string
 }
 
 // Generate implements i3.Generator
@@ -38,6 +42,9 @@ func (c Clock) Generate() ([]i3.Output, error) {
 	}
 
 	o := i3.Output{
+		Name:     c.Name,
+		Instance: c.Instance,
+
 		FullText:  st,
 		Color:     color,
 		Separator: true,

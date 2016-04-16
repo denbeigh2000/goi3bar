@@ -12,6 +12,9 @@ import (
 // Cpu is a small CPU load monitor. It scrapes /proc/loadavg to display your
 // average # waiting threads over 1, 5 and 15 minute averages.
 type CpuPerc struct {
+	// Name to identify this widget when receiving events
+	Name string
+
 	// If the CPU loads exceeds these thresholds, they will be rendered in the
 	// corresponding state.
 	WarnThreshold float64
@@ -58,6 +61,7 @@ func (c CpuPerc) format(p float64) []i3.Output {
 	}
 
 	return []i3.Output{{
+		Name:      c.Name,
 		FullText:  fmt.Sprintf("CPU: %.2f%%", p),
 		Color:     color,
 		Separator: true,

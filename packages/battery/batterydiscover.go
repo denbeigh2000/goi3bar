@@ -69,7 +69,7 @@ func BatteryDiscover(names map[string]string, WarnThreshold, CritThreshold int) 
 		}
 
 		batteries[name] = &Battery{
-			Name:       name,
+			Name:       "MultiBattery",
 			Identifier: in,
 
 			WarnThreshold: WarnThreshold,
