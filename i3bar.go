@@ -290,7 +290,7 @@ func (i *I3bar) loop() {
 		case event := <-i.clicks:
 			producer, ok := i.producers[event.Name]
 			if !ok {
-				// Somebody didn't use the right name, oh well
+				// Somebody didn't register with the right name, oh well
 				continue
 			}
 

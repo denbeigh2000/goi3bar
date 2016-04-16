@@ -100,6 +100,7 @@ all their options.
 ### TODO
 
 Currently have:
+ - Support (but no action) for click events
  - Configuration via JSON
  - Formattable clock
  - Memory usage (with configurable color thresholds)

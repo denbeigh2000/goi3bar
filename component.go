@@ -20,7 +20,9 @@ type Producer interface {
 	Produce(kill <-chan struct{}) <-chan []Output
 }
 
-// A Clicker receives click events from the i3bar.
+// A Clicker receives click events from the i3bar. If a registered Producer
+// also implements Clicker, then that its' Click method will be called with
+// the click event received from i3bar.
 type Clicker interface {
 	Click(ClickEvent) error
 }

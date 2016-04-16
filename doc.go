@@ -42,6 +42,13 @@ managed scheduling.
 Examples of the Generator+BaseProducer plugins are the clock, battery, disk usage
 and network packages
 
+Clicker
+
+The Clicker is the interface that must be implemented to support interaction
+through click events. To properly support this, you must also emit a Name value
+in your Output structs, which must match the name your Producer was registered
+with, otherwise the event will be unable to be routed back to your Producer.
+
 Builder
 
 The Builder is the interface that must be implemented when making your plugin
