@@ -54,6 +54,14 @@ type Output struct {
 	Urgent    bool   `json:"urgent"`
 }
 
+type ClickEvent struct {
+	Name     string `json:"name"`
+	Instance string `json:"instance"`
+	Button   int    `json:"button"`
+	XCoord   int    `json:"x"`
+	YCoord   int    `json:"y"`
+}
+
 type Colors struct {
 	General string `json:"color_general"`
 	OK      string `json:"color_ok"`
@@ -151,6 +159,7 @@ type I3bar struct {
 	interval  time.Duration
 	in        chan Update
 	json      chan []Output
+	clicks    chan ClickEvent
 	kill      chan struct{}
 }
 
@@ -164,12 +173,13 @@ func NewI3bar(update time.Duration) *I3bar {
 		in:        make(chan Update),
 		json:      make(chan []Output),
 		kill:      make(chan struct{}),
+		clicks:    make(chan ClickEvent),
 		values:    make(map[string][]Output),
 	}
 }
 
 // Start starts the i3bar (and all registered Producers)
-func (i *I3bar) Start() {
+func (i *I3bar) Start(clicks io.Reader) {
 	var o <-chan []Output
 	for k, p := range i.producers {
 		o = p.Produce(i.kill)
@@ -183,6 +193,28 @@ func (i *I3bar) Start() {
 			}
 		}(k, o)
 	}
+
+	go func() {
+		defer close(i.clicks)
+
+		clickDecoder := json.NewDecoder(clicks)
+
+		event := ClickEvent{}
+		for clickDecoder.More() {
+			err := clickDecoder.Decode(&event)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error receiving click event: %v\n", err)
+				// Can't decode the click event, probably bad input
+				continue
+			}
+
+			fmt.Fprintf(os.Stderr, "Received click event: %v\n", event)
+
+			i.clicks <- event
+		}
+
+		fmt.Fprintf(os.Stderr, "No more click events :(\n")
+	}()
 
 	go i.loop()
 }
@@ -255,6 +287,20 @@ func (i *I3bar) loop() {
 		select {
 		case update := <-i.in:
 			i.values[update.Key] = update.Out
+		case event := <-i.clicks:
+			producer, ok := i.producers[event.Name]
+			if !ok {
+				// Somebody didn't use the right name, oh well
+				continue
+			}
+
+			clicker, ok := producer.(Clicker)
+			if !ok {
+				// Producer doesn't support clicking, oh well
+				continue
+			}
+
+			go clicker.Click(event)
 		case <-t.C:
 			items := i.collect()
 

@@ -20,6 +20,11 @@ type Producer interface {
 	Produce(kill <-chan struct{}) <-chan []Output
 }
 
+// A Clicker receives click events from the i3bar.
+type Clicker interface {
+	Click(ClickEvent) error
+}
+
 // A BaseProducer is a simple Producer, which generates output at regular
 // intervals using a Generator.
 type BaseProducer struct {

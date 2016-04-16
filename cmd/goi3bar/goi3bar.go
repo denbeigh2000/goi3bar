@@ -64,7 +64,7 @@ func main() {
 	signal.Notify(c, syscall.SIGINT)
 	signal.Notify(c, syscall.SIGTERM)
 
-	bar.Start()
+	bar.Start(os.Stdin)
 	defer bar.Kill()
 
 	for s := range c {
