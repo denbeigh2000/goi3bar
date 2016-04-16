@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	intro        = "{ \"version\": 1 }\n"
+	intro        = `{ "version": 1, "click_events": true }`
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
@@ -105,7 +105,7 @@ func (c *Colors) Update(other Colors) error {
 // listens to the incoming channel, encodes the data to JSON and writes it to
 // stdout
 func output(ch <-chan []Output) {
-	fmt.Fprintf(os.Stdout, intro)
+	fmt.Fprintf(os.Stdout, "%v\n", intro)
 	fmt.Fprintf(os.Stdout, "[\n")
 
 	var buf bytes.Buffer
@@ -199,6 +199,12 @@ func (i *I3bar) Start(clicks io.Reader) {
 
 		clickDecoder := json.NewDecoder(clicks)
 
+		// Read opening bracket
+		_, err := clickDecoder.Token()
+		if err != nil {
+			panic(err)
+		}
+
 		event := ClickEvent{}
 		for clickDecoder.More() {
 			err := clickDecoder.Decode(&event)
@@ -208,12 +214,14 @@ func (i *I3bar) Start(clicks io.Reader) {
 				continue
 			}
 
-			fmt.Fprintf(os.Stderr, "Received click event: %v\n", event)
-
 			i.clicks <- event
 		}
 
-		fmt.Fprintf(os.Stderr, "No more click events :(\n")
+		_, err = clickDecoder.Token()
+		if err != nil {
+			panic(err)
+		}
+
 	}()
 
 	go i.loop()
