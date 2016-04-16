@@ -27,6 +27,22 @@ type Clicker interface {
 	Click(ClickEvent) error
 }
 
+// A GeneratorClicker is both a Generator and a Clicker.
+// It exists so we can have a concrete implementation built on BaseProducer
+// that can also be used for plugins that implement Clicker
+type GeneratorClicker interface {
+	Generator
+	Clicker
+}
+
+// A ProducerClicker is both a Producer and a Clicker.
+// It exists so we can have a concrete implementation built on BaseProducer
+// that can also be used for plugins that implement Clicker
+type ProducerClicker interface {
+	Producer
+	Clicker
+}
+
 // A BaseProducer is a simple Producer, which generates output at regular
 // intervals using a Generator.
 type BaseProducer struct {
@@ -34,6 +50,26 @@ type BaseProducer struct {
 
 	Interval time.Duration
 	Name     string
+}
+
+// A BaseProducerClicker is like a BaseProducer, but it uses a GeneratorClicker
+// instead of a Generator so it can also implement Clicker
+type BaseProducerClicker struct {
+	GeneratorClicker
+
+	Interval time.Duration
+	Name     string
+}
+
+func (p *BaseProducerClicker) Produce(kill <-chan struct{}) <-chan []Output {
+	producer := &BaseProducer{
+		Generator: p,
+
+		Interval: p.Interval,
+		Name:     p.Name,
+	}
+
+	return producer.Produce(kill)
 }
 
 // A StaticGenerator is a simple Generator that returns the same Output each time.
