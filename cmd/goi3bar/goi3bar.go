@@ -8,6 +8,7 @@ import (
 	_ "github.com/denbeigh2000/goi3bar/packages/disk"
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
 	_ "github.com/denbeigh2000/goi3bar/packages/network"
+	"github.com/denbeigh2000/goi3bar/util"
 
 	"flag"
 	"fmt"
@@ -23,9 +24,15 @@ func loadConfigSet() (config.ConfigSet, error) {
 	var inFile io.Reader
 	switch *path {
 	case "stdin":
-		inFile = os.Stdin
+		fmt.Fprintf(os.Stderr, "===\n")
+		fmt.Fprintf(os.Stderr, "===\n")
+		fmt.Fprintf(os.Stderr, "Stdin configuration no longer supported due to not being able to read stdin after EOF.\n")
+		fmt.Fprintf(os.Stderr, "Please use --config-path instead\n")
+		fmt.Fprintf(os.Stderr, "===\n")
+		fmt.Fprintf(os.Stderr, "===\n")
+		return config.ConfigSet{}, util.DeprecationError{}
 	case "":
-		panic("Config path explicitly provided as empty, bailing")
+		return config.ConfigSet{}, fmt.Errorf("Config path explicitly provided as empty, bailing")
 	default:
 		f, err := os.Open(*path)
 		if err != nil {
