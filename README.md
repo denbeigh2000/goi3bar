@@ -39,6 +39,10 @@ or through stdin:
 ```
 cat ~/.i3/config.json | goi3bar
 ```
+**NB**: While input through stdin is supported in this version, it will be
+removed in a future revision - I am working on support for click events in a
+feature branch (it's almost ready - check it out!) which needs to read from
+stdin.
 
 Set either of these as your `status_command` field in `~/.i3/config`
 
