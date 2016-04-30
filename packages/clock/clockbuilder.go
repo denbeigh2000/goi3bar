@@ -32,10 +32,10 @@ func (b clockBuilder) Build(conf config.Config) (i3.Producer, error) {
 		c.Instance = c.Location
 	}
 
-	return &i3.BaseProducer{
-		Generator: c,
-		Interval:  1 * time.Second,
-		Name:      "time",
+	return &i3.BaseProducerClicker{
+		GeneratorClicker: &c,
+		Interval:         1 * time.Second,
+		Name:             "time",
 	}, nil
 }
 

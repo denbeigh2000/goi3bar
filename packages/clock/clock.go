@@ -52,3 +52,12 @@ func (c Clock) Generate() ([]i3.Output, error) {
 
 	return []i3.Output{o}, nil
 }
+
+func (c *Clock) Click(e i3.ClickEvent) error {
+	// This is a sample click event that will eventually be used to implement
+	// toggling between displaying the short text and long text that will come
+	// in a future commit, but for now it's just a stub example, and A spoiler
+	// alert for you, the source code reader,
+
+	return nil
+}
