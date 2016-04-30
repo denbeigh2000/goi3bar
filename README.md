@@ -2,6 +2,8 @@
 
 [![GoDoc](https://godoc.org/github.com/denbeigh2000/goi3bar?status.svg)](http://godoc.org/github.com/denbeigh2000/goi3bar)
 
+**New feature**: API for click events (implement Clicker interface)
+
 Finally, a configurable, lightweight and easily extensible replacement for i3status.
 
 Why use this over several other alternatives?
@@ -33,12 +35,10 @@ config file path:
 ```
 goi3bar --config-path $HOME/.i3/config.json
 ```
-**NB**: While input through stdin is supported in this version, it will be
-removed in a future revision - I am working on support for click events in a
-feature branch (it's almost ready - check it out!) which needs to read from
-stdin, and we can't read from stdin after reading EOF.
-
 Set this as the `status_command` field in `~/.i3/config`.
+
+**NB**: Input through stdin is no longer supported following the introduction of
+click event support, due to needing stdin to listen for events
 
 ### Basic configuration
 
@@ -107,4 +107,5 @@ Currently have:
 Want to have:
  - Unit testing!
  - More configurability for memory, battery moinitors (e.g., formattable)
+ - Respecting start/stop signals received from i3bar
  - Support for more batteries(?) This was written for a ThinkPad x240 because that's what I have. Pull requests welcome if some battery functionality does not work on your machine. 
