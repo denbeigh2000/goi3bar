@@ -194,34 +194,13 @@ func (i *I3bar) Start(clicks io.Reader) {
 		}(k, o)
 	}
 
+	clickEvents := generateClicks(clicks)
+
 	go func() {
 		defer close(i.clicks)
-
-		clickDecoder := json.NewDecoder(clicks)
-
-		// Read opening bracket
-		_, err := clickDecoder.Token()
-		if err != nil {
-			panic(err)
+		for e := range clickEvents {
+			i.clicks <- e
 		}
-
-		event := ClickEvent{}
-		for clickDecoder.More() {
-			err := clickDecoder.Decode(&event)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error receiving click event: %v\n", err)
-				// Can't decode the click event, probably bad input
-				continue
-			}
-
-			i.clicks <- event
-		}
-
-		_, err = clickDecoder.Token()
-		if err != nil {
-			panic(err)
-		}
-
 	}()
 
 	go i.loop()
@@ -262,6 +241,44 @@ func (i *I3bar) Order(keys []string) error {
 
 	i.order = keys
 	return nil
+}
+
+func generateClicks(clicks io.Reader) <-chan ClickEvent {
+	out := make(chan ClickEvent)
+
+	clickDecoder := json.NewDecoder(clicks)
+
+	go func() {
+		defer close(out)
+
+		// Read opening bracket
+		_, err := clickDecoder.Token()
+		if err != nil {
+			panic(err)
+		}
+
+		event := ClickEvent{}
+		for clickDecoder.More() {
+			fmt.Fprintf(os.Stdin, ",")
+			err := clickDecoder.Decode(&event)
+			if err != nil {
+				// Can't decode the click event, probably bad input
+				continue
+			}
+
+			out <- event
+		}
+
+		_, err = clickDecoder.Token()
+		switch err {
+		case nil, io.EOF:
+		default:
+			// TODO: Handle with more grace
+			panic(err)
+		}
+	}()
+
+	return out
 }
 
 // collect is a helper function which retrieves the current Outputs from the
