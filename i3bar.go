@@ -186,10 +186,16 @@ func (i *I3bar) Start(clicks io.Reader) {
 
 		go func(key string, out <-chan []Output) {
 			for x := range out {
-				i.in <- Update{
-					Key: key,
-					Out: x,
-				}
+				go func() {
+					// Ensure that all click events are routed back to the original producer
+					for _, block := range x {
+						block.Name = key
+					}
+					i.in <- Update{
+						Key: key,
+						Out: x,
+					}
+				}()
 			}
 		}(k, o)
 	}
