@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/denbeigh2000/goi3bar/util"
 )
 
 // A Generator generates content to put on an i3bar. Other functions will call
@@ -96,16 +98,8 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 	out := make(chan []Output)
 	go func() {
 		defer close(out)
-		t := time.NewTicker(p.Interval)
-		defer t.Stop()
-
-		// Generate first pack to deliver information fast
-		data, err := p.Generate()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error generating first packet for %v: %v\n", p.Name, err)
-			return
-		}
-		p.sendOutput(out, data, kill)
+		t := util.NewTicker(p.Interval, true)
+		defer t.Kill()
 
 		for {
 			select {
