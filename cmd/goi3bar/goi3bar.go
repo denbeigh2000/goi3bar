@@ -8,7 +8,6 @@ import (
 	_ "github.com/denbeigh2000/goi3bar/packages/disk"
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
 	_ "github.com/denbeigh2000/goi3bar/packages/network"
-	"github.com/denbeigh2000/goi3bar/util"
 
 	"flag"
 	"fmt"
@@ -20,6 +19,8 @@ import (
 
 var path = flag.String("config-path", "stdin", "Path to the config file to use")
 
+const stdinErrMsg = "Cannot use stdin to take input. Reference a file explicitly with --config-path instead"
+
 func loadConfigSet() (config.ConfigSet, error) {
 	var inFile io.Reader
 	switch *path {
@@ -30,7 +31,7 @@ func loadConfigSet() (config.ConfigSet, error) {
 		fmt.Fprintf(os.Stderr, "Please use --config-path instead\n")
 		fmt.Fprintf(os.Stderr, "===\n")
 		fmt.Fprintf(os.Stderr, "===\n")
-		return config.ConfigSet{}, util.DeprecationError{}
+		return config.ConfigSet{}, fmt.Errorf(stdinErrMsg)
 	case "":
 		return config.ConfigSet{}, fmt.Errorf("Config path explicitly provided as empty, bailing")
 	default:
