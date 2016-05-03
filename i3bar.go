@@ -8,6 +8,8 @@ import (
 	"os"
 	"regexp"
 	"time"
+
+	"github.com/denbeigh2000/goi3bar/util"
 )
 
 const (
@@ -309,8 +311,8 @@ func (i *I3bar) collect() []Output {
 func (i *I3bar) loop() {
 	defer close(i.json)
 
-	t := time.NewTicker(i.interval)
-	defer t.Stop()
+	t := util.NewTicker(i.interval, true)
+	defer t.Kill()
 
 	go output(i.json)
 
