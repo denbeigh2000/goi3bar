@@ -2,6 +2,8 @@ package util
 
 import "time"
 
+// NewTicker returns a new Ticker which ticks repeatedly at the given duration.
+// If insta is set to true, it will send a tick down its' channel on instantiation
 func NewTicker(d time.Duration, insta bool) *Ticker {
 	t := &Ticker{d, nil, insta, nil, nil}
 
@@ -10,6 +12,9 @@ func NewTicker(d time.Duration, insta bool) *Ticker {
 	return t
 }
 
+// Ticker behaves like time.Ticker, but also supports stopping and restarting
+// without destroying the initial ticker, as well as sending the first tick
+// immediately
 type Ticker struct {
 	// Duration represents frequently the ticker should tick
 	Duration time.Duration
@@ -23,6 +28,8 @@ type Ticker struct {
 	out chan time.Time
 }
 
+// Start starts the Ticker, or resumes it from a stopped state.
+// It will panic if called while the Ticker is in a started or killed state.
 func (t *Ticker) Start() {
 	if t.t != nil {
 		panic("Ticker already started")
@@ -49,11 +56,18 @@ func (t *Ticker) start() {
 	}()
 }
 
+// Kill kills the ticker, preventing it from being started again.
+// The Ticker will panic if Start() is called after Kill()
+// Kill may be called when the ticker is in any state (other than killed)
 func (t *Ticker) Kill() {
 	t.Stop()
 	close(t.out)
 }
 
+// Stop stops the ticker, with the intention of restarting it again.
+// The outbound channel is not closed. If you are intending not to use the
+// Ticker again, call Kill() to properly free resources. Stop may be called
+// from any state.
 func (t *Ticker) Stop() {
 	if t.t != nil {
 		t.stop()
