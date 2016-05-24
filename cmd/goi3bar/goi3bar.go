@@ -8,6 +8,7 @@ import (
 	_ "github.com/denbeigh2000/goi3bar/packages/disk"
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
 	_ "github.com/denbeigh2000/goi3bar/packages/network"
+	_ "github.com/denbeigh2000/goi3bar/packages/command"
 
 	"flag"
 	"fmt"
