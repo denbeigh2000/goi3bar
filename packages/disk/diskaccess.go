@@ -16,7 +16,7 @@ import (
 func currentIOStatus(devices ...string) (map[string]uint64, error) {
 	send := make(map[string]uint64, len(devices))
 
-	allUsage, err := psDisk.DiskIOCounters()
+	allUsage, err := psDisk.IOCounters()
 	if err != nil {
 		return nil, err
 	}
