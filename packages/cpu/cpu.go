@@ -27,7 +27,7 @@ const (
 )
 
 func (c *Cpu) populateValues() error {
-	load, err := load.LoadAvg()
+	load, err := load.Avg()
 	if err != nil {
 		return err
 	}
