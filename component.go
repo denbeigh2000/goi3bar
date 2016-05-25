@@ -107,7 +107,10 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 				data, err := p.Generate()
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", p.Name, err)
-					continue
+					data = []Output{{
+						FullText: fmt.Sprintf("ERROR from %v: %v", p.Name, err),
+						Color:    DefaultColors.Crit,
+					}}
 				}
 
 				// Attempt to send the output
