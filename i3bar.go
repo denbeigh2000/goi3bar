@@ -17,6 +17,7 @@ const (
 	formatString = "%a %d-%b-%y %I:%M:%S"
 )
 
+// These colors are the default colors used for alert state if none are given.
 const (
 	DefaultColorGeneral = "#FFFFFF"
 	DefaultColorOK      = "#00FF00"
@@ -26,6 +27,9 @@ const (
 
 var ColorRegexp = regexp.MustCompile("#[0-9A-Fa-f]{6}")
 
+// These are colors that should be used through the program.
+// They will respect custom configuration given by the user in their
+// JSON config.
 var DefaultColors = Colors{
 	General: DefaultColorGeneral,
 	OK:      DefaultColorOK,
