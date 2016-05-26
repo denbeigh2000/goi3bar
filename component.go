@@ -108,8 +108,9 @@ func (p *BaseProducer) Produce(kill <-chan struct{}) <-chan []Output {
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Error generating output for %v: %v\n", p.Name, err)
 					data = []Output{{
-						FullText: fmt.Sprintf("ERROR from %v: %v", p.Name, err),
-						Color:    DefaultColors.Crit,
+						FullText:  fmt.Sprintf("ERROR from %v: %v", p.Name, err),
+						Color:     DefaultColors.Crit,
+						Separator: true,
 					}}
 				}
 
