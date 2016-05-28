@@ -34,9 +34,8 @@ func (g CommandGenerator) Generate() ([]i3.Output, error) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		log.Panicf("Failed to execute %s: %v", g.Command, err)
-		items[0].FullText = "ERROR"
-		items[0].Color = i3.DefaultColors.Crit
+		log.Printf("Failed to execute %s: %v", g.Command, err)
+		return nil, err
 	} else {
 		if (g.Color == "") {
 			items[0].Color = i3.DefaultColors.General
