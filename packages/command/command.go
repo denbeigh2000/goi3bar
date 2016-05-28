@@ -43,7 +43,7 @@ func (g CommandGenerator) Generate() ([]i3.Output, error) {
 			items[0].Color = g.Color
 		}
 		text := strings.TrimRight(out.String(), "\n\r")
-		if g.Label == "" {
+		if g.Label != "" {
 			items[0].FullText = fmt.Sprintf("%s %s", g.Label, text)
 		} else {
 			items[0].FullText = text
