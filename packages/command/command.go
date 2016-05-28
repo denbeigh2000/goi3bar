@@ -1,11 +1,11 @@
 package command
 
 import (
-	i3 "github.com/denbeigh2000/goi3bar"
-	"os/exec"
 	"bytes"
 	"fmt"
+	i3 "github.com/denbeigh2000/goi3bar"
 	"log"
+	"os/exec"
 	"strings"
 )
 
@@ -19,7 +19,7 @@ type CommandGenerator struct {
 	Color    string `json:"color"`
 
 	// Identifier for receiving click events
-	Name     string
+	Name string
 }
 
 func (g CommandGenerator) Generate() ([]i3.Output, error) {
@@ -27,7 +27,7 @@ func (g CommandGenerator) Generate() ([]i3.Output, error) {
 
 	items[0].Name = g.Name
 	cmd := exec.Command(g.Command)
-	if (len(g.Instance) > 0) {
+	if len(g.Instance) > 0 {
 		cmd.Env = []string{fmt.Sprintf("BLOCK_INSTANCE=%s", g.Instance)}
 	}
 	var out bytes.Buffer
@@ -37,13 +37,13 @@ func (g CommandGenerator) Generate() ([]i3.Output, error) {
 		log.Printf("Failed to execute %s: %v", g.Command, err)
 		return nil, err
 	} else {
-		if (g.Color == "") {
+		if g.Color == "" {
 			items[0].Color = i3.DefaultColors.General
 		} else {
 			items[0].Color = g.Color
 		}
 		text := strings.TrimRight(out.String(), "\n\r")
-		if (g.Label == "") {
+		if g.Label == "" {
 			items[0].FullText = fmt.Sprintf("%s %s", g.Label, text)
 		} else {
 			items[0].FullText = text

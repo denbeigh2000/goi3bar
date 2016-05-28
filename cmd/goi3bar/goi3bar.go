@@ -4,11 +4,11 @@ import (
 	"github.com/denbeigh2000/goi3bar/config"
 	_ "github.com/denbeigh2000/goi3bar/packages/battery"
 	_ "github.com/denbeigh2000/goi3bar/packages/clock"
+	_ "github.com/denbeigh2000/goi3bar/packages/command"
 	_ "github.com/denbeigh2000/goi3bar/packages/cpu"
 	_ "github.com/denbeigh2000/goi3bar/packages/disk"
 	_ "github.com/denbeigh2000/goi3bar/packages/memory"
 	_ "github.com/denbeigh2000/goi3bar/packages/network"
-	_ "github.com/denbeigh2000/goi3bar/packages/command"
 
 	"flag"
 	"fmt"

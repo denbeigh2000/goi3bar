@@ -9,8 +9,8 @@ import (
 const Identifier = "command"
 
 type CommandConfig struct {
-	Interval string             `json:"interval"`
-	Options  CommandGenerator   `json:"options"`
+	Interval string           `json:"interval"`
+	Options  CommandGenerator `json:"options"`
 }
 
 type CommandBuilder struct {
