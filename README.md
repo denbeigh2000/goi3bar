@@ -1,6 +1,7 @@
 ## goi3bar
 
 [![GoDoc](https://godoc.org/github.com/denbeigh2000/goi3bar?status.svg)](http://godoc.org/github.com/denbeigh2000/goi3bar)
+[![Travis CI](https://travis-ci.org/denbeigh2000/goi3bar.svg?branch=denbeigh-unit-testing)](https://travis-ci.org/denbeigh2000/goi3bar)
 
 **New feature**: API for click events (implement Clicker interface)
 
