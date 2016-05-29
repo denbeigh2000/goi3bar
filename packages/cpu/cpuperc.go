@@ -37,7 +37,7 @@ func (c *CpuPerc) report(kill <-chan struct{}) chan float64 {
 			case <-kill:
 				return
 			default:
-				p, err := cpu.CPUPercent(c.Interval, false)
+				p, err := cpu.Percent(c.Interval, false)
 				if err != nil {
 					continue
 				}
