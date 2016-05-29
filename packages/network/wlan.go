@@ -10,8 +10,13 @@ import (
 )
 
 const (
-	essidRxStr      = "ESSID:\"(.*)\""
-	strengthRxStr   = "Link Quality=(\\d+)/(\\d+)"
+	essidRxStr    = "ESSID:\"(.*)\""
+	strengthRxStr = "Link Quality=(\\d+)/(\\d+)"
+)
+
+const (
+	defaultTpl      = "%v: %v %v (%v)"
+	noStrengthTpl   = "%v: %v (%v)"
 	notConnectedTpl = "%v not connected"
 )
 
@@ -26,9 +31,11 @@ type WLANDevice struct {
 	WarnThreshold int
 	CritThreshold int
 
-	// Signal strength as a number between 0 and 100
+	// Signal strength as a percentage.
 	strength int
-	essid    string
+	// true if there is no signal strength available from iw
+	strengthUnavailable bool
+	essid               string
 }
 
 func (d *WLANDevice) updateESSID(input string) error {
@@ -44,8 +51,9 @@ func (d *WLANDevice) updateESSID(input string) error {
 
 func (d *WLANDevice) updateStrength(input string) error {
 	matches := strengthRx.FindStringSubmatch(input)
-	if len(matches) < 3 {
-		return fmt.Errorf("Couldn't match strength")
+	d.strengthUnavailable = len(matches) < 3
+	if d.strengthUnavailable {
+		return nil
 	}
 
 	strengthNum, errN := strconv.Atoi(matches[1])
@@ -67,9 +75,8 @@ func (d *WLANDevice) fetch() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	outputS := string(output)
 
-	return outputS, nil
+	return string(output), nil
 }
 
 func (d *WLANDevice) update() error {
@@ -114,11 +121,17 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 		ip = d.ip.String()
 	}
 
-	txt := fmt.Sprintf("%v: %v %v%% (%v)", d.Name, d.essid,
-		d.strength, ip)
+	var txt string
+	if d.strengthUnavailable {
+		txt = fmt.Sprintf(noStrengthTpl, d.Name, d.essid, ip)
+	} else {
+		txt = fmt.Sprintf(defaultTpl, d.Name, d.essid, d.strength, ip)
+	}
 
 	var color string
 	switch {
+	case d.strengthUnavailable:
+		color = i3.DefaultColors.OK
 	case d.strength < d.CritThreshold:
 		color = i3.DefaultColors.Crit
 	case d.strength < d.WarnThreshold:
@@ -127,13 +140,11 @@ func (d *WLANDevice) Generate() ([]i3.Output, error) {
 		color = i3.DefaultColors.OK
 	}
 
-	out := i3.Output{
+	return []i3.Output{{
 		Name:      Identifier,
 		Instance:  d.Identifier,
 		FullText:  txt,
 		Color:     color,
 		Separator: true,
-	}
-
-	return []i3.Output{out}, nil
+	}}, nil
 }
