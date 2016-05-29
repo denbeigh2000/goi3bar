@@ -43,6 +43,26 @@ func (i InvalidColorErr) Error() string {
 	return fmt.Sprintf("Invalid color %v, must be of the form #09abCF", string(i))
 }
 
+func ParseColor(c string) (string, error) {
+	if c == "" {
+		return DefaultColors.General, nil
+	}
+
+	if err := IsColorValid(c); err != nil {
+		return "", err
+	}
+
+	return c, nil
+}
+
+func IsColorValid(c string) (err error) {
+	if !ColorRegexp.MatchString(c) {
+		err = InvalidColorErr(c)
+	}
+
+	return
+}
+
 type registerer interface {
 	Register(key string, p Producer)
 }
