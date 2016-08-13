@@ -4,6 +4,7 @@ import (
 	i3 "github.com/denbeigh2000/goi3bar"
 	"github.com/denbeigh2000/goi3bar/config"
 
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -12,8 +13,8 @@ import (
 // device. It only has one property: refresh interval, and then can contain
 // arbitrary device configs
 type generalConfig struct {
-	Interval string      `json:"interval"`
-	Config   interface{} `json:"config"`
+	Interval string          `json:"interval"`
+	Config   json.RawMessage `json:"config"`
 }
 
 // Devicer is an interface used within this package to represent a configuration struct
@@ -61,8 +62,8 @@ func (c wirelessDeviceConfig) Device() (i3.Generator, error) {
 
 // multiDeviceConfig represents a JSON configuration for a MultiDevice
 type multiDeviceConfig struct {
-	Devices    map[string]interface{} `json:"devices"`
-	Preference []string               `json:"preference"`
+	Devices    map[string]json.RawMessage `json:"devices"`
+	Preference []string                   `json:"preference"`
 }
 
 // Device() implements Devicer
@@ -73,17 +74,13 @@ func (c multiDeviceConfig) Device() (i3.Generator, error) {
 
 	devices := make(map[string]NetworkDevice)
 	for k, v := range c.Devices {
-		// Prevent erroneous and recursive definitions before expensive operations
-		switch guessJsonType(v) {
-		case "basic", "wireless":
-		default:
-			return MultiDevice{}, fmt.Errorf("Can't have recursive multi device configs")
-		}
-
 		// Attempt to determine which network device we are given
 		d, err := buildNetworkConfig(v)
 		if err != nil {
 			return MultiDevice{}, err
+		}
+		if _, ok := d.(multiDeviceConfig); ok {
+			return MultiDevice{}, fmt.Errorf("Recursive multi-devices not allowed")
 		}
 
 		if _, ok := devices[k]; ok {

@@ -1,8 +1,7 @@
 package network
 
 import (
-	"github.com/denbeigh2000/goi3bar/util"
-
+	"encoding/json"
 	"fmt"
 )
 
@@ -12,6 +11,8 @@ import (
 // calling our extremely expensive JSONReparse more than we need to.
 func guessJsonType(i interface{}) string {
 	iMap, ok := i.(map[string]interface{})
+
+	fmt.Printf("i: %v\tiMap: %v\tok: %v\n", i, iMap, ok)
 	if !ok {
 		return ""
 	}
@@ -33,9 +34,19 @@ func guessJsonType(i interface{}) string {
 
 // buildNetworkConfig makes some optimistic assertions about the type of the
 // given interface, and tries to decode it into a know Devicer
-func buildNetworkConfig(i interface{}) (d Devicer, err error) {
+func buildNetworkConfig(data []byte) (d Devicer, err error) {
+	dataCopy := make([]byte, len(data))
+	copy(dataCopy, data)
+
+	container := make(map[string]interface{})
+	fmt.Println(string(data))
+	err = json.Unmarshal(data, &container)
+	if err != nil {
+		return
+	}
+
 	var o interface{}
-	switch guessJsonType(i) {
+	switch guessJsonType(container) {
 	case "multi":
 		o = &multiDeviceConfig{}
 	case "basic":
@@ -48,7 +59,7 @@ func buildNetworkConfig(i interface{}) (d Devicer, err error) {
 		return nil, fmt.Errorf("Unknown NetworkDevice type: this should never happen")
 	}
 
-	err = util.JSONReparse(i, o)
+	err = json.Unmarshal(dataCopy, o)
 	if err != nil {
 		return
 	}

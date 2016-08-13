@@ -2,8 +2,8 @@ package config
 
 import (
 	. "github.com/denbeigh2000/goi3bar"
-	"github.com/denbeigh2000/goi3bar/util"
 
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -26,16 +26,16 @@ type Builder interface {
 
 // Config for one individual plugin instance
 type Config struct {
-	Package string      `json:"package"`
-	Name    string      `json:"name"`
-	Options interface{} `json:"options"`
+	Package string          `json:"package"`
+	Name    string          `json:"name"`
+	Options json.RawMessage `json:"options"`
 }
 
 // ParseConfig is the point where your plugin's JSON config subtree will be
 // parsed. Call this function with a pointer to your JSON-annotated config
 // struct type in here, and it will behave as you expect it to.
 func (c Config) ParseConfig(i interface{}) error {
-	return util.JSONReparse(c.Options, i)
+	return json.Unmarshal(c.Options, i)
 }
 
 // ConfigSet represents an entire JSON config file. If all goes well, it
