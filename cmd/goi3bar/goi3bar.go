@@ -18,23 +18,15 @@ import (
 	"syscall"
 )
 
-var path = flag.String("config-path", "stdin", "Path to the config file to use")
+var path = flag.String("config-path", "", "Path to the config file to use")
 
-const stdinErrMsg = "Cannot use stdin to take input. Reference a file explicitly with --config-path instead"
+var noPathErr = fmt.Errorf("A configuration file is required, specify one with the -config-json flag")
 
 func loadConfigSet() (config.ConfigSet, error) {
 	var inFile io.Reader
 	switch *path {
-	case "stdin":
-		fmt.Fprintf(os.Stderr, "===\n")
-		fmt.Fprintf(os.Stderr, "===\n")
-		fmt.Fprintf(os.Stderr, "Stdin configuration no longer supported due to not being able to read stdin after EOF.\n")
-		fmt.Fprintf(os.Stderr, "Please use --config-path instead\n")
-		fmt.Fprintf(os.Stderr, "===\n")
-		fmt.Fprintf(os.Stderr, "===\n")
-		return config.ConfigSet{}, fmt.Errorf(stdinErrMsg)
 	case "":
-		return config.ConfigSet{}, fmt.Errorf("Config path explicitly provided as empty, bailing")
+		return config.ConfigSet{}, noPathErr
 	default:
 		f, err := os.Open(*path)
 		if err != nil {
