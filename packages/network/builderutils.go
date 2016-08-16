@@ -12,7 +12,6 @@ import (
 func guessJsonType(i interface{}) string {
 	iMap, ok := i.(map[string]interface{})
 
-	fmt.Printf("i: %v\tiMap: %v\tok: %v\n", i, iMap, ok)
 	if !ok {
 		return ""
 	}
@@ -39,7 +38,6 @@ func buildNetworkConfig(data []byte) (d Devicer, err error) {
 	copy(dataCopy, data)
 
 	container := make(map[string]interface{})
-	fmt.Println(string(data))
 	err = json.Unmarshal(data, &container)
 	if err != nil {
 		return
