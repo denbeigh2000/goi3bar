@@ -25,12 +25,18 @@ Talk is cheap! This powers my own i3bar:
 ![i3bar2](http://i.imgur.com/HOTvNyp.png)
 ![i3bar3](http://i.imgur.com/SnHTnkA.png)
 
-### Getting started
+### Installation
 
 **Dependency**: iwconfig for WLAN info. Should be available in `$PATH`
 
 Either generate a binary with `go build`, or run `go install` in the root dir
-and add `$GOPATH/bin` to your `$PATH`, then run the `goi3bar` binary with your
+and add `$GOPATH/bin` to your `$PATH`.
+
+Arch Linux users can install the aur package `goi3bar-git`
+
+### Usage
+
+then run the `goi3bar` binary with your
 config file path:
 ```
 goi3bar --config-path $HOME/.i3/config.json
@@ -40,7 +46,7 @@ Set this as the `status_command` field in `~/.i3/config`.
 **NB**: Input through stdin is no longer supported following the introduction of
 click event support, due to needing stdin to listen for events
 
-### Basic configuration
+### Configuration
 
 A configuration file is represented with JSON, consisting of refresh interval
 and zero or more entries
@@ -62,7 +68,7 @@ A set of packages come pre-included in the default "goi3bar" binary
 | network | Information about currently connected networks |
 | clock | Current time |
 
-#### Sample config
+#### Sample
 
 This is a very simple config file, there is a sample configuration file in
 `cmd/goi3bar/config.json`, which contains configuration for all plugins and
@@ -107,5 +113,4 @@ Currently have:
 Want to have:
  - Unit testing!
  - More configurability for memory, battery moinitors (e.g., formattable)
- - Respecting start/stop signals received from i3bar
  - Support for more batteries(?) This was written for a ThinkPad x240 because that's what I have. Pull requests welcome if some battery functionality does not work on your machine. 
