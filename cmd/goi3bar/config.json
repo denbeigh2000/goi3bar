@@ -14,8 +14,8 @@
             "name": "cpu_util",
             "options": {
                 "interval": "5s",
-                "warn_threshold": 0.8,
-                "crit_threshold": 1.0
+                "warn_threshold": 75,
+                "crit_threshold": 90
             }
         },
         {
