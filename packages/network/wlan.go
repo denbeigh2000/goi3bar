@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	defaultTpl      = "%v: %v %v (%v)"
+	defaultTpl      = "%v: %v %v%% (%v)"
 	noStrengthTpl   = "%v: %v (%v)"
 	notConnectedTpl = "%v not connected"
 )
