@@ -25,18 +25,29 @@ Talk is cheap! This powers my own i3bar:
 
 ### Installation
 
-**Dependency**: iwconfig for WLAN info. Should be available in `$PATH`
+If you have the pleasure of running Arch Linux, you can simply install the
+`goi3bar-git` package from the aur. Otherwise, read on:
 
-Either generate a binary with `go build`, or run `go install` in the root dir
-and add `$GOPATH/bin` to your `$PATH`.
+1. Install the `go` tool (at least version 1.5)
+2. Set up your `GOPATH` and `PATH` environment variables as described
+    [here](https://golang.org/doc/code.html#GOPATH).
+3. Download this repository and it's dependencies with
+    `go get github.com/denbeigh2000/goi3bar/...`
+4. Install with `go install github.com/denbeigh2000/goi3bar/cmd/goi3bar`
 
-Arch Linux users can install the aur package `goi3bar-git`
+**Required for WLAN**: iwconfig. Should be available in `$PATH`.
+Simple installation check:
+
+```
+$ which iwconfig>/dev/null && echo "yay" || echo "no"
+yay
+```
 
 ### Usage
 
 Run the `goi3bar` binary with your config file path as an argument:
 ```
-goi3bar -config-path $HOME/.i3/config.json
+$ goi3bar -config-path /path/to/your/config.json
 ```
 
 Set this as the `status_command` field in `~/.i3/config`.

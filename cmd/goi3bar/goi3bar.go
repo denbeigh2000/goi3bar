@@ -13,6 +13,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,7 +21,7 @@ import (
 
 var path = flag.String("config-path", "", "Path to the config file to use")
 
-var noPathErr = fmt.Errorf("A configuration file is required, specify one with the -config-json flag")
+var noPathErr = fmt.Errorf("A configuration file is required, see `goi3bar -h`")
 
 func loadConfigSet() (config.ConfigSet, error) {
 	var inFile io.Reader
@@ -45,12 +46,12 @@ func main() {
 
 	cs, err := loadConfigSet()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error parsing configuration file: %v", err)
 	}
 
 	bar, err := cs.Build()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error generating configuration: %v", err)
 	}
 
 	c := make(chan os.Signal, 1)
@@ -62,7 +63,7 @@ func main() {
 	defer bar.Kill()
 
 	for s := range c {
-		fmt.Printf("Signal %v received, exiting\n", s)
+		log.Printf("Signal %v received, exiting\n", s)
 		return
 	}
 }
