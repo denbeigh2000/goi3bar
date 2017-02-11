@@ -3,7 +3,7 @@ package memory
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
 
-	"github.com/pivotal-golang/bytefmt"
+	"code.cloudfoundry.org/bytefmt"
 	"github.com/shirou/gopsutil/mem"
 
 	"fmt"
