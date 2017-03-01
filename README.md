@@ -52,8 +52,9 @@ $ goi3bar -config-path /path/to/your/config.json
 
 Set this as the `status_command` field in `~/.i3/config`.
 
-**NB**: Input through stdin is no longer supported following the introduction of
-click event support, due to needing stdin to listen for events
+If you see `Error: status_command not found or is missing a library dependency (exit 127)` in your i3bar,
+it means `goi3bar` is not in your `$PATH`. Either set your `$PATH` in the script that instantiates i3,
+such as `xinitc`, or provide the fully-qualified to the `goi3bar` binary, i.e. `/home/denbeigh/dev/go/bin/goi3bar`
 
 ### Configuration
 
