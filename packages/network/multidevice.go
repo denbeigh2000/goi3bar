@@ -3,7 +3,6 @@ package network
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
 
-	"fmt"
 	"sync"
 )
 
@@ -12,6 +11,8 @@ func (m *MultiDevice) concurrentUpdate() error {
 	errCh := make(chan error)
 	wg := sync.WaitGroup{}
 
+	// will this handle the case where i attach a dock with an external NIC?
+	// i think so - no checks are done before iw is called and life is good
 	for _, d := range m.Devices {
 		wg.Add(1)
 		go func(d NetworkDevice) {
@@ -52,7 +53,7 @@ func (m MultiDevice) Generate() ([]i3.Output, error) {
 
 	for _, key := range m.Preference {
 		if _, ok := m.Devices[key]; !ok {
-			return nil, fmt.Errorf("Device %v doesn't exist", key)
+			continue
 		}
 
 		device := m.Devices[key]
