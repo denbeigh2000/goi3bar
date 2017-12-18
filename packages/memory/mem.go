@@ -47,7 +47,7 @@ func (m Memory) Generate() ([]i3.Output, error) {
 	}
 
 	total := mem.Total
-	used := total - mem.Buffers - mem.Cached - mem.Free
+	used := total - mem.Available
 
 	percUsed := (100 * used) / total
 
