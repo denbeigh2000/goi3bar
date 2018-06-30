@@ -68,6 +68,7 @@ func (c *Cpu) Generate() ([]i3.Output, error) {
 			Name:      c.Name,
 			Instance:  instance,
 			FullText:  strconv.FormatFloat(l, 'f', 2, 64),
+			MinWidth:  "5.55",
 			Color:     color,
 			Separator: i == expMatches-1,
 		}

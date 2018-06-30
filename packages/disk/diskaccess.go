@@ -99,6 +99,10 @@ func generateIO(kill <-chan struct{}, interval time.Duration,
 
 func (g *DiskIOGenerator) createOutput(i DiskIOItem, v float64) i3.Output {
 	text := fmt.Sprintf("%v: %v/s", i.Name, util.ByteFmt(v))
+	// TODO: Have a more reasonable way of making this minwidth.
+	// How can this work for both monospace and non?
+	// text := fmt.Sprintf("%v:%8v/s", i.Name, util.ByteFmt(v))
+	// minWidth := fmt.Sprintf("%v:555.5K/s", i.Name)
 
 	var color string
 	switch {
@@ -112,7 +116,8 @@ func (g *DiskIOGenerator) createOutput(i DiskIOItem, v float64) i3.Output {
 
 	return i3.Output{
 		FullText: text,
-		Color:    color,
+		// MinWidth: minWidth,
+		Color: color,
 	}
 }
 

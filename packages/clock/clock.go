@@ -5,10 +5,13 @@ import (
 	timeFormat "github.com/jehiah/go-strftime"
 
 	"errors"
+	"regexp"
 	"time"
 )
 
 var CorruptedConfigErr = errors.New("Could not parse config options")
+
+var minWidthReplaceRegex = regexp.MustCompile(`%(-)?[HIMS]`)
 
 type Clock struct {
 	// How the time should be formatted. See http://strftime.org/ for reference.
@@ -20,21 +23,29 @@ type Clock struct {
 	// Details to identify clock for events
 	Name     string
 	Instance string
+
+	location *time.Location
+
+	minWidth       string
+	lastDayChecked int
 }
 
 // Generate implements i3.Generator
-func (c Clock) Generate() ([]i3.Output, error) {
+func (c *Clock) Generate() ([]i3.Output, error) {
 	if c.Location == "" {
 		c.Location = "Local"
 	}
 
-	l, err := time.LoadLocation(c.Location)
-	if err != nil {
-		return nil, err
+	var err error
+	if c.location == nil {
+		c.location, err = time.LoadLocation(c.Location)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	t := time.Now()
-	st := timeFormat.Format(c.Format, t.In(l))
+	now := time.Now()
+	st := timeFormat.Format(c.Format, now.In(c.location))
 
 	color := c.Color
 	if color == "" {
@@ -50,6 +61,8 @@ func (c Clock) Generate() ([]i3.Output, error) {
 		Separator: true,
 	}
 
+	o.MinWidth = c.getMinWidth(now)
+
 	return []i3.Output{o}, nil
 }
 
@@ -60,4 +73,19 @@ func (c *Clock) Click(e i3.ClickEvent) error {
 	// alert for you, the source code reader,
 
 	return nil
+}
+
+func (c *Clock) getMinWidth(now time.Time) string {
+	if c.lastDayChecked != now.Day() || c.minWidth == "" {
+		c.minWidth = c.genMinWidth(now)
+		c.lastDayChecked = now.Day()
+	}
+
+	return c.minWidth
+}
+
+func (c *Clock) genMinWidth(now time.Time) string {
+	tFakeFormat := minWidthReplaceRegex.ReplaceAllLiteralString(c.Format, "05")
+
+	return timeFormat.Format(tFakeFormat, now.In(c.location))
 }

@@ -63,6 +63,7 @@ func (c CpuPerc) format(p float64) []i3.Output {
 	return []i3.Output{{
 		Name:      c.Name,
 		FullText:  fmt.Sprintf("CPU: %.2f%%", p),
+		MinWidth:  "CPU: 55.55%",
 		Color:     color,
 		Separator: true,
 	}}
