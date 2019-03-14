@@ -2,6 +2,8 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
+VERSION="0.0.1-dev"
+
 # gazelle:prefix github.com/denbeigh2000/goi3bar
 gazelle(name = "gazelle")
 
@@ -19,8 +21,15 @@ go_library(
     deps = ["//util"],
 )
 
+genrule(
+    name = "shasum",
+    srcs = ["//cmd/goi3bar:goi3bar"],
+    outs = ["sha256sums.txt"],
+    cmd = "sha256sum $< | sed \"s|$<|$$(basename $<)|\" > $@",
+)
+
 pkg_tar(
-    name = "bin_release",
+    name = "release",
     extension = "tar.gz",
     mode = "0755",
     deps = [ "//cmd/goi3bar:goi3bar_pkg"],
