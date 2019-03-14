@@ -1,7 +1,8 @@
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_library(
-    name = "goi3bar",
+    name = "lib",
     srcs = ["goi3bar.go"],
     importpath = "github.com/denbeigh2000/goi3bar/cmd/goi3bar",
     visibility = ["//visibility:private"],
@@ -18,7 +19,15 @@ go_library(
 )
 
 go_binary(
-    name = "goi3bar_bin",
-    embed = [":goi3bar"],
+    name = "goi3bar",
+    embed = [":lib"],
+    visibility = ["//visibility:public"],
+)
+
+pkg_tar(
+    name = "goi3bar_pkg",
+    srcs = [ ":goi3bar"],
+    mode = "0755",
+    package_dir = "/usr/bin",
     visibility = ["//visibility:public"],
 )
