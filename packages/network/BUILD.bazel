@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "network",
+    srcs = [
+        "builderutils.go",
+        "multidevice.go",
+        "network.go",
+        "networkbuilder.go",
+        "wlan.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/network",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+    ],
+)

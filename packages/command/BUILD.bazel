@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "command",
+    srcs = [
+        "command.go",
+        "commandbuilder.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/command",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+    ],
+)

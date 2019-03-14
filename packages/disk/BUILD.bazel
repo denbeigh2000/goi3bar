@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "disk",
+    srcs = [
+        "disk.go",
+        "diskaccess.go",
+        "diskaccessbuilder.go",
+        "diskbuilder.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/disk",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+        "//util",
+        "@com_github_shirou_gopsutil//disk:go_default_library",
+        "@org_cloudfoundry_code_bytefmt//:go_default_library",
+    ],
+)

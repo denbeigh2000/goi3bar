@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/denbeigh2000/goi3bar
+gazelle(name = "gazelle")
+
+go_library(
+    name = "goi3bar",
+    srcs = [
+        "component.go",
+        "doc.go",
+        "i3bar.go",
+        "multigenerator.go",
+        "multiproducer.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar",
+    visibility = ["//visibility:public"],
+    deps = ["//util"],
+)

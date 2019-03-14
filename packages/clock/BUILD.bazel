@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "clock",
+    srcs = [
+        "clock.go",
+        "clockbuilder.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/clock",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+        "@com_github_jehiah_go_strftime//:go_default_library",
+    ],
+)

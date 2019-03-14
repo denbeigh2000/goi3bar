@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "goi3bar",
+    srcs = ["goi3bar.go"],
+    importpath = "github.com/denbeigh2000/goi3bar/cmd/goi3bar",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//config",
+        "//packages/battery",
+        "//packages/clock",
+        "//packages/command",
+        "//packages/cpu",
+        "//packages/disk",
+        "//packages/memory",
+        "//packages/network",
+    ],
+)
+
+go_binary(
+    name = "goi3bar_bin",
+    embed = [":goi3bar"],
+    visibility = ["//visibility:public"],
+)

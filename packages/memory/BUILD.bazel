@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "memory",
+    srcs = [
+        "mem.go",
+        "membuilder.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/memory",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+        "@com_github_shirou_gopsutil//mem:go_default_library",
+        "@org_cloudfoundry_code_bytefmt//:go_default_library",
+    ],
+)

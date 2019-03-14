@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "battery",
+    srcs = [
+        "battery.go",
+        "batterybuilder.go",
+        "batterydiscover.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/battery",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+        "@com_github_alyu_configparser//:go_default_library",
+    ],
+)

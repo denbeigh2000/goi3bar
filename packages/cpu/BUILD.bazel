@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cpu",
+    srcs = [
+        "cpu.go",
+        "cpubuilder.go",
+        "cpuperc.go",
+    ],
+    importpath = "github.com/denbeigh2000/goi3bar/packages/cpu",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:goi3bar",
+        "//config",
+        "@com_github_shirou_gopsutil//cpu:go_default_library",
+        "@com_github_shirou_gopsutil//load:go_default_library",
+    ],
+)
