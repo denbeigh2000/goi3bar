@@ -1,5 +1,5 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", "pkg_tar")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 VERSION="0.0.1-dev"
@@ -32,5 +32,16 @@ pkg_tar(
     name = "release",
     extension = "tar.gz",
     mode = "0755",
-    deps = [ "//cmd/goi3bar:goi3bar_pkg"],
+    deps = ["//cmd/goi3bar:goi3bar_pkg"],
+)
+
+pkg_deb(
+    name = "release_debian",
+    data = "//cmd/goi3bar:goi3bar_pkg",
+    package = "goi3bar",
+    maintainer = "Denbeigh Stevens <denbeigh@denbeighstevens.com>",
+    version = VERSION,
+    description = "An i3 replacement written in Go",
+    homepage = "https://github.com/denbeigh2000/goi3bar",
+    recommends = ["wireless-tools"],
 )
