@@ -3,10 +3,11 @@ package battery
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
 
-	cfg "github.com/alyu/configparser"
-
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -55,26 +56,36 @@ func (b *Battery) Warn() bool {
 func (b *Battery) update() error {
 	file := fmt.Sprintf(BatteryPath, b.Identifier)
 
-	config, err := cfg.Read(file)
+	f, err := os.Open(file)
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
-	c, err := config.Section("global")
-	if err != nil {
-		return err
+	var fullCharge, currentCharge, powerUse, currentPerc float64
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		tokens := strings.SplitN(scanner.Text(), "=", 2)
+		if len(tokens) != 2 {
+			continue
+		}
+		switch tokens[0] {
+		case "POWER_SUPPLY_ENERGY_FULL_DESIGN":
+			fullCharge, _ = strconv.ParseFloat(tokens[1], 32)
+		case "POWER_SUPPLY_CHARGE_FULL":
+			fullCharge, _ = strconv.ParseFloat(tokens[1], 32)
+		case "POWER_SUPPLY_ENERGY_NOW":
+			currentCharge, _ = strconv.ParseFloat(tokens[1], 32)
+		case "POWER_SUPPLY_CHARGE_NOW":
+			currentCharge, _ = strconv.ParseFloat(tokens[1], 32)
+		case "POWER_SUPPLY_STATUS":
+			b.status = tokens[1]
+		case "POWER_SUPPLY_POWER_NOW":
+			powerUse, _ = strconv.ParseFloat(tokens[1], 32)
+		case "POWER_SUPPLY_CAPACITY":
+			currentPerc, _ = strconv.ParseFloat(tokens[1], 32)
+		}
 	}
-
-	b.present = c.ValueOf("POWER_SUPPLY_PRESENT") == "1"
-	b.status = c.ValueOf("POWER_SUPPLY_STATUS")
-
-	fullCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_FULL"), 32)
-	currentCharge, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_ENERGY_NOW"), 32)
-	powerUse, _ := strconv.ParseFloat(c.ValueOf("POWER_SUPPLY_POWER_NOW"), 32)
-
-	currentPerc, _ := strconv.Atoi(c.ValueOf("POWER_SUPPLY_CAPACITY"))
-
-	b.level = currentPerc
 
 	if powerUse == 0 {
 		b.remaining = 0 * time.Hour
@@ -88,6 +99,8 @@ func (b *Battery) update() error {
 			b.remaining = 0 * time.Hour
 		}
 	}
+
+	b.level = int(currentPerc)
 
 	return nil
 }
