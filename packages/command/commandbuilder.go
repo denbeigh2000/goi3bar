@@ -2,47 +2,42 @@ package command
 
 import (
 	i3 "github.com/denbeigh2000/goi3bar"
-	"github.com/denbeigh2000/goi3bar/config"
+	config "github.com/denbeigh2000/goi3bar/config"
 
 	"time"
 )
 
 const Identifier = "command"
 
-type CommandBuilder struct {
-	Interval string  `json:"interval"`
-	Color    string  `json:"color"`
-	Options  Command `json:"options"`
-}
+type commandBuilder struct{}
 
-func (b CommandBuilder) Build(c config.Config) (p i3.Producer, err error) {
-	conf := Command{}
-
-	interval, err := time.ParseDuration(b.Interval)
-	if err != nil {
-		return
+func (b commandBuilder) Build(c config.Config) (i3.Producer, error) {
+	conf := CommandConfig{}
+	if err := c.ParseConfig(&conf); err != nil {
+		return nil, err
 	}
 
-	err = c.ParseConfig(&b)
-	if err != nil {
-		return
+	if len(conf.Name) == 0 {
+		switch c.Name {
+		case "":
+			conf.Name = Identifier
+		default:
+			conf.Name = c.Name
+		}
 	}
 
-	color, err := i3.ParseColor(b.Color)
+	interval, err := time.ParseDuration(conf.Interval)
 	if err != nil {
-		return
+		return nil, err
 	}
-	conf.Color = color
 
-	p = &i3.BaseProducer{
-		Generator: conf,
+	return &i3.BaseProducer{
+		Generator: &conf,
 		Interval:  interval,
 		Name:      Identifier,
-	}
-
-	return
+	}, nil
 }
 
 func init() {
-	config.Register("command", CommandBuilder{})
+	config.Register(Identifier, commandBuilder{})
 }
