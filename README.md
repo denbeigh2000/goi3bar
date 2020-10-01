@@ -71,6 +71,7 @@ A set of packages come pre-included in the default "goi3bar" binary
 | --- | --- |
 | cpu_load | 1, 5, 15 minute CPU loads |
 | cpu_util | Current CPU percentage utilisation |
+| command | Execute any external command |
 | memory | Current memory usage |
 | disk_usage | Current free disk space |
 | disk_access | Current data I/O rate |
@@ -119,8 +120,9 @@ Currently have:
  - Network info with funky applet which only shows most preferred connected network
  - Disk read/write rates
  - Disk usage
+ - External commands
 
 Want to have:
  - Unit testing!
  - More configurability for memory, battery moinitors (e.g., formattable)
- - Support for more batteries(?) This was written for a ThinkPad x240 because that's what I have. Pull requests welcome if some battery functionality does not work on your machine. 
+ - Support for more batteries(?) This was written for a ThinkPad x240 because that's what I have. Pull requests welcome if some battery functionality does not work on your machine.

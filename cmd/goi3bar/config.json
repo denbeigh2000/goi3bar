@@ -129,6 +129,15 @@
                 "color": "#FFFFFF",
                 "location": ""
             }
+        },
+        {
+            "package": "command",
+            "name": "command",
+            "options": {
+                "interval": "10s",
+                "color": "#FFFF00",
+                "command": "id"
+            }
         }
     ],
     "interval": "1s",
